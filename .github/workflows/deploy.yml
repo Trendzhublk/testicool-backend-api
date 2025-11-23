@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up PHP (MATCH LOCK FILE)
+      # Set up PHP 8.3
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -24,8 +24,8 @@ jobs:
       - name: Install Composer dependencies (no dev)
         run: composer install --no-progress --prefer-dist --no-dev -o --no-interaction
 
-      # Build frontend if package.json exists
-      - name: Set up Node (for Vite/Tailwind build)
+      # Setup Node
+      - name: Set up Node
         if: ${{ hashFiles('package.json') != '' }}
         uses: actions/setup-node@v4
         with:
@@ -33,19 +33,20 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
-      - name: Build frontend (if using npm)
+      # Build frontend
+      - name: Build frontend
         if: ${{ hashFiles('package.json') != '' }}
         run: |
           npm ci
           npm run build
 
-      # Prepare deploy folder
+      # Reinstall vendor for production
       - name: Reinstall vendor for production
         run: |
           rm -rf vendor
           composer install --no-dev --optimize-autoloader --no-interaction
 
-      # Create timestamp for release
+      # Create timestamp
       - name: Create release timestamp
         id: vars
         run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
@@ -61,7 +62,6 @@ jobs:
           remote_user: deploy
           remote_port: 22
           remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-          rsh: "ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no"
 
       # Run commands on EC2
       - name: Run remote release commands
@@ -74,14 +74,14 @@ jobs:
           script: |
             set -e
 
-            RELEASE_DIR="/var/www/myapp//releases/${{ env.RELEASE }}"
-            CURRENT_DIR="/var/www/myapp//current"
+            RELEASE_DIR="/var/www/myapp/releases/${{ env.RELEASE }}"
+            CURRENT_DIR="/var/www/myapp/current"
 
             echo "Deploying release: $RELEASE_DIR"
 
             # Link shared .env and storage
-            ln -nfs /var/www/myapp//shared/.env $RELEASE_DIR/.env
-            ln -nfs $/var/www/myapp//shared/storage $RELEASE_DIR/storage
+            ln -nfs /var/www/myapp/shared/.env $RELEASE_DIR/.env
+            ln -nfs /var/www/myapp/shared/storage $RELEASE_DIR/storage
 
             # Permissions
             chown -R deploy:www-data $RELEASE_DIR
@@ -97,15 +97,15 @@ jobs:
             php artisan route:cache
             php artisan view:cache
 
-            # Update current symlink
+            # Set current symlink
             ln -nfs $RELEASE_DIR $CURRENT_DIR
 
-            # Restart services (PHP 8.3)
+            # Restart services
             sudo systemctl restart php8.3-fpm
             sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
 
-            # Keep last 5 releases
-            cd /var/www/myapp//releases
+            # Cleanup old releases
+            cd /var/www/myapp/releases
             ls -1dt */ | tail -n +6 | xargs -r rm -rf
 
             echo "Deployment completed successfully."
