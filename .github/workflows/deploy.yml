@@ -7,8 +7,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up PHP
@@ -17,35 +18,43 @@ jobs:
           php-version: "8.2"
           tools: composer
 
-      - name: Install Composer dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist --no-dev -o
+      - name: Install Composer dependencies (no dev)
+        run: composer install --no-progress --prefer-dist --no-dev -o
 
-      - name: Build frontend (if you use npm)
-        if: fileExists('package.json')
+      # Build frontend if package.json exists
+      - name: Build frontend (if using npm)
+        if: ${{ hashFiles('package.json') != '' }}
         run: |
-          sudo apt-get update && sudo apt-get install -y nodejs npm
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
           npm ci
           npm run build
 
-      - name: Prepare deploy files
+      # Prepare deploy folder
+      - name: Reinstall vendor for production
         run: |
           rm -rf vendor
-          composer install --no-dev --optimize-autoloader
-          # remove node_modules/build artifacts if not needed
+          composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: Copy to server (rsync over SSH)
+      # Create timestamp for release
+      - name: Create release timestamp
+        id: vars
+        run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
+
+      # Deploy to EC2 using rsync
+      - name: Upload to EC2 (rsync)
         uses: burnett01/rsync-deployments@v4
         with:
           switches: -avz --delete --omit-dir-times --no-perms
           path: .
-          remote_path: ${{ secrets.DEPLOY_PATH }}/releases/$(date +%s)
+          remote_path: ${{ secrets.DEPLOY_PATH }}/releases/${{ env.RELEASE }}
           remote_host: ${{ secrets.DEPLOY_HOST }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_port: ${{ secrets.SSH_PORT }}
-          # private key needs to be provided
           private_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
 
-      - name: Remote release commands
+      # Run commands on EC2
+      - name: Run remote release commands
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -54,25 +63,39 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
-            RELEASE_DIR="${{ secrets.DEPLOY_PATH }}/releases/$(ls -1 ${{ secrets.DEPLOY_PATH }}/releases | sort -n | tail -1)"
-            echo "Release dir: $RELEASE_DIR"
-            # set shared symlinks
+
+            RELEASE_DIR="${{ secrets.DEPLOY_PATH }}/releases/${{ env.RELEASE }}"
+            CURRENT_DIR="${{ secrets.DEPLOY_PATH }}/current"
+
+            echo "Deploying release: $RELEASE_DIR"
+
+            # Link shared .env and storage
             ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/.env $RELEASE_DIR/.env
             ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/storage $RELEASE_DIR/storage
-            # set correct ownership
+
+            # Set permissions
             chown -R deploy:www-data $RELEASE_DIR
-            # install composer (if vendor not included)
+            chmod -R 775 $RELEASE_DIR/storage $RELEASE_DIR/bootstrap/cache
+
+            # Laravel optimize
             cd $RELEASE_DIR
             composer install --no-dev --optimize-autoloader --no-interaction
+            php artisan storage:link || true
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
             php artisan view:clear
             php artisan cache:clear
-            # symlink current
-            ln -nfs $RELEASE_DIR ${{ secrets.DEPLOY_PATH }}/current
-            # restart php-fpm (optional) and queue worker
+
+            # Update current symlink
+            ln -nfs $RELEASE_DIR $CURRENT_DIR
+
+            # Restart services
             sudo systemctl restart php8.2-fpm
             sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
-            # cleanup older releases (keep last 5)
-            ls -1dt ${{ secrets.DEPLOY_PATH }}/releases/* | tail -n +6 | xargs -r rm -rf
+
+            # Keep last 5 releases
+            cd ${{ secrets.DEPLOY_PATH }}/releases
+            ls -1dt */ | tail -n +6 | xargs -r rm -rf
+
+            echo "Deployment completed successfully."
