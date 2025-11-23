@@ -1,0 +1,78 @@
+name: CI/CD Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist --no-dev -o
+
+      - name: Build frontend (if you use npm)
+        if: fileExists('package.json')
+        run: |
+          sudo apt-get update && sudo apt-get install -y nodejs npm
+          npm ci
+          npm run build
+
+      - name: Prepare deploy files
+        run: |
+          rm -rf vendor
+          composer install --no-dev --optimize-autoloader
+          # remove node_modules/build artifacts if not needed
+
+      - name: Copy to server (rsync over SSH)
+        uses: burnett01/rsync-deployments@v4
+        with:
+          switches: -avz --delete --omit-dir-times --no-perms
+          path: .
+          remote_path: ${{ secrets.DEPLOY_PATH }}/releases/$(date +%s)
+          remote_host: ${{ secrets.DEPLOY_HOST }}
+          remote_user: ${{ secrets.DEPLOY_USER }}
+          remote_port: ${{ secrets.SSH_PORT }}
+          # private key needs to be provided
+          private_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+
+      - name: Remote release commands
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            RELEASE_DIR="${{ secrets.DEPLOY_PATH }}/releases/$(ls -1 ${{ secrets.DEPLOY_PATH }}/releases | sort -n | tail -1)"
+            echo "Release dir: $RELEASE_DIR"
+            # set shared symlinks
+            ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/.env $RELEASE_DIR/.env
+            ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/storage $RELEASE_DIR/storage
+            # set correct ownership
+            chown -R deploy:www-data $RELEASE_DIR
+            # install composer (if vendor not included)
+            cd $RELEASE_DIR
+            composer install --no-dev --optimize-autoloader --no-interaction
+            php artisan migrate --force
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:clear
+            php artisan cache:clear
+            # symlink current
+            ln -nfs $RELEASE_DIR ${{ secrets.DEPLOY_PATH }}/current
+            # restart php-fpm (optional) and queue worker
+            sudo systemctl restart php8.2-fpm
+            sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
+            # cleanup older releases (keep last 5)
+            ls -1dt ${{ secrets.DEPLOY_PATH }}/releases/* | tail -n +6 | xargs -r rm -rf
