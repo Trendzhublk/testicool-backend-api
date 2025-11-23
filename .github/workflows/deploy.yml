@@ -83,9 +83,9 @@ jobs:
             ln -nfs /var/www/myapp/shared/.env $RELEASE_DIR/.env
             ln -nfs /var/www/myapp/shared/storage $RELEASE_DIR/storage
 
-            # Permissions
-            chown -R deploy:www-data $RELEASE_DIR
-            chmod -R 775 $RELEASE_DIR/storage $RELEASE_DIR/bootstrap/cache
+            # Ensure correct permissions (no chown here, deploy owns everything already)
+            # Only chmod on writable folders
+            chmod -R 775 $RELEASE_DIR/storage $RELEASE_DIR/bootstrap/cache || true
 
             # Laravel optimize
             cd $RELEASE_DIR
@@ -97,14 +97,14 @@ jobs:
             php artisan route:cache
             php artisan view:cache
 
-            # Set current symlink
+            # Move current symlink
             ln -nfs $RELEASE_DIR $CURRENT_DIR
 
-            # Restart services
+            # Restart PHP services
             sudo systemctl restart php8.3-fpm
             sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
 
-            # Cleanup old releases
+            # Cleanup old releases (keep last 5)
             cd /var/www/myapp/releases
             ls -1dt */ | tail -n +6 | xargs -r rm -rf
 
