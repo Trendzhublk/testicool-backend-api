@@ -40,31 +40,26 @@ jobs:
           npm ci
           npm run build
 
-      # Reinstall vendor for production
+      # Reinstall vendor for production (ensures clean prod deps)
       - name: Reinstall vendor for production
         run: |
           rm -rf vendor
           composer install --no-dev --optimize-autoloader --no-interaction
 
-      # Create timestamp
-      - name: Create release timestamp
-        id: vars
-        run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
-
-      # Deploy to EC2 using rsync
+      # Upload to EC2 using rsync (DEPLOY STRAIGHT TO CURRENT)
       - name: Upload to EC2 (rsync)
         uses: Burnett01/rsync-deployments@7.0.2
         with:
-          switches: -avz --delete --omit-dir-times --no-perms
+          switches: -avz --delete --omit-dir-times --no-perms --exclude ".env" --exclude "storage"
           path: .
-          remote_path: /var/www/myapp/releases/${{ env.RELEASE }}
+          remote_path: /var/www/myapp/current
           remote_host: 13.62.175.201
           remote_user: deploy
           remote_port: 22
           remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
 
       # Run commands on EC2
-      - name: Run remote release commands
+      - name: Run remote deployment commands
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: 13.62.175.201
@@ -74,38 +69,34 @@ jobs:
           script: |
             set -e
 
-            RELEASE_DIR="/var/www/myapp/releases/${{ env.RELEASE }}"
             CURRENT_DIR="/var/www/myapp/current"
+            SHARED_DIR="/var/www/myapp/shared"
 
-            echo "Deploying release: $RELEASE_DIR"
+            echo "Deploying to: $CURRENT_DIR"
+            cd $CURRENT_DIR
 
-            # Link shared .env and storage
-            ln -nfs /var/www/myapp/shared/.env $RELEASE_DIR/.env
-            ln -nfs /var/www/myapp/shared/storage $RELEASE_DIR/storage
+            # Ensure shared folder exists (do not delete it)
+            mkdir -p $SHARED_DIR/storage
 
-            # Ensure correct permissions (no chown here, deploy owns everything already)
-            # Only chmod on writable folders
-            chmod -R 775 $RELEASE_DIR/storage $RELEASE_DIR/bootstrap/cache || true
+            # Link shared .env and storage into current
+            ln -nfs $SHARED_DIR/.env $CURRENT_DIR/.env
+            rm -rf $CURRENT_DIR/storage
+            ln -nfs $SHARED_DIR/storage $CURRENT_DIR/storage
 
-            # Laravel optimize
-            cd $RELEASE_DIR
+            # Ensure bootstrap/cache exists
+            mkdir -p $CURRENT_DIR/bootstrap/cache
+
+            # Permissions: allow Laravel to write logs/cache
+            sudo chown -R www-data:www-data $SHARED_DIR/storage
+            sudo chmod -R 775 $SHARED_DIR/storage
+
+            sudo chown -R www-data:www-data $CURRENT_DIR/bootstrap/cache
+            sudo chmod -R 775 $CURRENT_DIR/bootstrap/cache
+
+            # Laravel tasks
             composer install --no-dev --optimize-autoloader --no-interaction
             php artisan storage:link || true
-            php artisan cache:clear
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
-            php artisan view:cache
-
-            # Move current symlink
-            ln -nfs $RELEASE_DIR $CURRENT_DIR
-
-            # Restart PHP services
-            sudo systemctl restart php8.3-fpm
-            sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
-
-            # Cleanup old releases (keep last 5)
-            cd /var/www/myapp/releases
-            ls -1dt */ | tail -n +6 | xargs -r rm -rf
+            php artisan migrate --force || true
+            php artisan optimize
 
             echo "Deployment completed successfully."
