@@ -9,22 +9,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
+      # ------------------------------------------
+      # 1) Checkout Code
+      # ------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up PHP 8.3
+      # ------------------------------------------
+      # 2) Setup PHP & Composer
+      # ------------------------------------------
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.3"
           tools: composer
 
-      # Install Composer dependencies (no dev)
-      - name: Install Composer dependencies (no dev)
-        run: composer install --no-progress --prefer-dist --no-dev -o --no-interaction
+      # ------------------------------------------
+      # 3) Install Composer (locally for build)
+      # ------------------------------------------
+      - name: Install Composer dependencies (local only)
+        run: |
+          composer install --no-progress --prefer-dist --no-dev -o --no-interaction
 
-      # Setup Node
+      # ------------------------------------------
+      # 4) Setup Node (if frontend exists)
+      # ------------------------------------------
       - name: Set up Node
         if: ${{ hashFiles('package.json') != '' }}
         uses: actions/setup-node@v4
@@ -33,24 +42,40 @@ jobs:
           cache: "npm"
           cache-dependency-path: package-lock.json
 
-      # Build frontend
+      # ------------------------------------------
+      # 5) Build Frontend
+      # ------------------------------------------
       - name: Build frontend
         if: ${{ hashFiles('package.json') != '' }}
         run: |
           npm ci
           npm run build
 
-      # Reinstall vendor for production (ensures clean prod deps)
-      - name: Reinstall vendor for production
-        run: |
-          rm -rf vendor
-          composer install --no-dev --optimize-autoloader --no-interaction
+      # ------------------------------------------
+      # 6) Cleanup vendor locally (we install again on server)
+      # ------------------------------------------
+      - name: Cleanup vendor for fresh server install
+        run: rm -rf vendor
 
-      # Upload to EC2 using rsync (DEPLOY STRAIGHT TO CURRENT)
+      # ------------------------------------------
+      # 7) Upload to EC2 using rsync (FAST + CLEAN)
+      # ------------------------------------------
       - name: Upload to EC2 (rsync)
         uses: Burnett01/rsync-deployments@7.0.2
         with:
-          switches: -avz --delete --omit-dir-times --no-perms --exclude ".env" --exclude "storage"
+          switches: >
+            -avz
+            --omit-dir-times
+            --no-perms
+            --no-owner
+            --no-group
+            --exclude ".git"
+            --exclude ".github"
+            --exclude ".env"
+            --exclude "storage"
+            --exclude "bootstrap/cache"
+            --exclude "vendor"
+            --exclude "node_modules"
           path: .
           remote_path: /var/www/myapp/current
           remote_host: 13.62.175.201
@@ -58,7 +83,9 @@ jobs:
           remote_port: 22
           remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
 
-      # Run commands on EC2
+      # ------------------------------------------
+      # 8) Execute commands on EC2
+      # ------------------------------------------
       - name: Run remote deployment commands
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -72,31 +99,34 @@ jobs:
             CURRENT_DIR="/var/www/myapp/current"
             SHARED_DIR="/var/www/myapp/shared"
 
-            echo "Deploying to: $CURRENT_DIR"
+            echo "🚀 Deploying to: $CURRENT_DIR"
+
             cd $CURRENT_DIR
 
-            # Ensure shared folder exists (do not delete it)
+            # Ensure shared structure
             mkdir -p $SHARED_DIR/storage
 
-            # Link shared .env and storage into current
+            # Symlink .env & storage (never overwritten)
             ln -nfs $SHARED_DIR/.env $CURRENT_DIR/.env
             rm -rf $CURRENT_DIR/storage
             ln -nfs $SHARED_DIR/storage $CURRENT_DIR/storage
 
-            # Ensure bootstrap/cache exists
+            # Ensure cache directory exists
             mkdir -p $CURRENT_DIR/bootstrap/cache
 
-            # Permissions: allow Laravel to write logs/cache
+            # Fix permissions for Laravel runtime dirs
             sudo chown -R www-data:www-data $SHARED_DIR/storage
             sudo chmod -R 775 $SHARED_DIR/storage
-
             sudo chown -R www-data:www-data $CURRENT_DIR/bootstrap/cache
             sudo chmod -R 775 $CURRENT_DIR/bootstrap/cache
 
-            # Laravel tasks
+            # Reinstall vendor on EC2
+            echo "Installing vendor packages..."
             composer install --no-dev --optimize-autoloader --no-interaction
+
+            # Laravel tasks
             php artisan storage:link || true
             php artisan migrate --force || true
             php artisan optimize
 
-            echo "Deployment completed successfully."
+            echo "🎉 Deployment completed successfully."
