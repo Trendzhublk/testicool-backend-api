@@ -9,15 +9,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Set up PHP
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: "8.2"
           tools: composer
 
+      # Install Composer dependencies (no dev)
       - name: Install Composer dependencies (no dev)
         run: composer install --no-progress --prefer-dist --no-dev -o
 
@@ -43,7 +46,7 @@ jobs:
 
       # Deploy to EC2 using rsync
       - name: Upload to EC2 (rsync)
-        uses: burnett01/rsync-deployments@v4
+        uses: burnett01/rsync-deployments@v3.0.0
         with:
           switches: -avz --delete --omit-dir-times --no-perms
           path: .
