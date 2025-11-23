@@ -55,6 +55,7 @@ jobs:
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_port: ${{ secrets.SSH_PORT }}
           remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          rsh: "ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no"
 
       # Run commands on EC2
       - name: Run remote release commands
