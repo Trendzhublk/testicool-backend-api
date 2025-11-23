@@ -25,11 +25,17 @@ jobs:
         run: composer install --no-progress --prefer-dist --no-dev -o --no-interaction
 
       # Build frontend if package.json exists
+      - name: Set up Node (for Vite/Tailwind build)
+        if: ${{ hashFiles('package.json') != '' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
       - name: Build frontend (if using npm)
         if: ${{ hashFiles('package.json') != '' }}
         run: |
-          sudo apt-get update
-          sudo apt-get install -y nodejs npm
           npm ci
           npm run build
 
@@ -50,10 +56,10 @@ jobs:
         with:
           switches: -avz --delete --omit-dir-times --no-perms
           path: .
-          remote_path: ${{ secrets.DEPLOY_PATH }}/releases/${{ env.RELEASE }}
-          remote_host: ${{ secrets.DEPLOY_HOST }}
-          remote_user: ${{ secrets.DEPLOY_USER }}
-          remote_port: ${{ secrets.SSH_PORT }}
+          remote_path: /var/www/myapp/releases/${{ env.RELEASE }}
+          remote_host: 13.62.175.201
+          remote_user: deploy
+          remote_port: 22
           remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
           rsh: "ssh -i /root/.ssh/id_rsa -o StrictHostKeyChecking=no"
 
@@ -61,21 +67,21 @@ jobs:
       - name: Run remote release commands
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
+          host: 13.62.175.201
+          username: deploy
           key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
+          port: 22
           script: |
             set -e
 
-            RELEASE_DIR="${{ secrets.DEPLOY_PATH }}/releases/${{ env.RELEASE }}"
-            CURRENT_DIR="${{ secrets.DEPLOY_PATH }}/current"
+            RELEASE_DIR="/var/www/myapp//releases/${{ env.RELEASE }}"
+            CURRENT_DIR="/var/www/myapp//current"
 
             echo "Deploying release: $RELEASE_DIR"
 
             # Link shared .env and storage
-            ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/.env $RELEASE_DIR/.env
-            ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/storage $RELEASE_DIR/storage
+            ln -nfs /var/www/myapp//shared/.env $RELEASE_DIR/.env
+            ln -nfs $/var/www/myapp//shared/storage $RELEASE_DIR/storage
 
             # Permissions
             chown -R deploy:www-data $RELEASE_DIR
@@ -85,11 +91,11 @@ jobs:
             cd $RELEASE_DIR
             composer install --no-dev --optimize-autoloader --no-interaction
             php artisan storage:link || true
+            php artisan cache:clear
             php artisan migrate --force
             php artisan config:cache
             php artisan route:cache
-            php artisan view:clear
-            php artisan cache:clear
+            php artisan view:cache
 
             # Update current symlink
             ln -nfs $RELEASE_DIR $CURRENT_DIR
@@ -99,7 +105,7 @@ jobs:
             sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
 
             # Keep last 5 releases
-            cd ${{ secrets.DEPLOY_PATH }}/releases
+            cd /var/www/myapp//releases
             ls -1dt */ | tail -n +6 | xargs -r rm -rf
 
             echo "Deployment completed successfully."
