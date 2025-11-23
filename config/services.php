@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'payment_method_types' => array_filter(
+            array_map('trim', explode(',', env('STRIPE_PAYMENT_METHOD_TYPES', 'card')))
+        ),
+    ],
 
     /*
     |--------------------------------------------------------------------------

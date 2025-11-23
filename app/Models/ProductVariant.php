@@ -27,6 +27,11 @@ class ProductVariant extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = [
+        'price',
+        'stock',
+    ];
+
     public function product()
     {
         return $this->belongsTo(Product::class);
@@ -60,5 +65,15 @@ class ProductVariant extends Model
     public function orderLines()
     {
         return $this->hasMany(Order::class, 'variant_id');
+    }
+
+    public function getPriceAttribute()
+    {
+        return $this->price_override ?? $this->product?->base_price;
+    }
+
+    public function getStockAttribute()
+    {
+        return $this->stock_qty;
     }
 }

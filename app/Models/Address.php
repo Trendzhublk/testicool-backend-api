@@ -22,6 +22,7 @@ class Address extends Model
         'grand_total',
         'status',
         'payment_status',
+        'country_code',
         'shipping_address',
         'billing_address',
         'notes',
@@ -40,5 +41,10 @@ class Address extends Model
     public function currency()
     {
         return $this->belongsTo(Currency::class, 'currency_code', 'code');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class, 'country_code', 'code');
     }
 }

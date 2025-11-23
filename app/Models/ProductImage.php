@@ -30,4 +30,14 @@ class ProductImage extends Model
     {
         return $this->belongsTo(ProductVariant::class, 'variant_id');
     }
+
+    public function getUrlAttribute()
+    {
+        return $this->path;
+    }
+
+    public function getIsCoverAttribute()
+    {
+        return (int) $this->sort_order === 1;
+    }
 }

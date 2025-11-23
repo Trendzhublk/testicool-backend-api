@@ -30,4 +30,14 @@ class Currency extends Model
     {
         return $this->hasMany(Address::class, 'currency_code', 'code');
     }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'currency_code', 'code');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'currency_code', 'code');
+    }
 }

@@ -24,4 +24,15 @@ class Size extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+
+    public function sizeCharts()
+    {
+        return $this->hasMany(SizeChart::class);
+    }
+
+    // Alias used in eager loads (variants.size.charts)
+    public function charts()
+    {
+        return $this->sizeCharts();
+    }
 }

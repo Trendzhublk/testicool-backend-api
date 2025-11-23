@@ -19,6 +19,14 @@ class Order extends Model
         'qty',
         'line_total',
         'meta',
+        'tracking_number',
+        'status',
+        'status_note',
+        'shipping_agent_id',
+        'sales_agent_id',
+        'customer_email',
+        'customer_name',
+        'status_updated_at',
     ];
 
     protected $casts = [
@@ -26,6 +34,7 @@ class Order extends Model
         'qty' => 'integer',
         'line_total' => 'decimal:2',
         'meta' => 'array',
+        'status_updated_at' => 'datetime',
     ];
 
     public function parent()
@@ -56,5 +65,15 @@ class Order extends Model
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function shippingAgent()
+    {
+        return $this->belongsTo(ShippingAgent::class, 'shipping_agent_id');
+    }
+
+    public function salesAgent()
+    {
+        return $this->belongsTo(User::class, 'sales_agent_id');
     }
 }

@@ -53,4 +53,15 @@ class Product extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function getCoverImageUrlAttribute()
+    {
+        $cover = $this->images->firstWhere('sort_order', 1);
+        return $cover?->path ?? $this->images->sortBy('sort_order')->first()?->path;
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }
