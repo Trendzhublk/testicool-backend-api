@@ -13,16 +13,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up PHP
+      # Set up PHP (MATCH LOCK FILE)
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.2"
+          php-version: "8.3"
           tools: composer
 
       # Install Composer dependencies (no dev)
       - name: Install Composer dependencies (no dev)
-        run: composer install --no-progress --prefer-dist --no-dev -o
+        run: composer install --no-progress --prefer-dist --no-dev -o --no-interaction
 
       # Build frontend if package.json exists
       - name: Build frontend (if using npm)
@@ -44,7 +44,7 @@ jobs:
         id: vars
         run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
 
-      # Deploy to EC2 using rsync (FIXED ACTION VERSION + INPUT NAME)
+      # Deploy to EC2 using rsync
       - name: Upload to EC2 (rsync)
         uses: Burnett01/rsync-deployments@7.0.2
         with:
@@ -76,7 +76,7 @@ jobs:
             ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/.env $RELEASE_DIR/.env
             ln -nfs ${{ secrets.DEPLOY_PATH }}/shared/storage $RELEASE_DIR/storage
 
-            # Set permissions
+            # Permissions
             chown -R deploy:www-data $RELEASE_DIR
             chmod -R 775 $RELEASE_DIR/storage $RELEASE_DIR/bootstrap/cache
 
@@ -93,8 +93,8 @@ jobs:
             # Update current symlink
             ln -nfs $RELEASE_DIR $CURRENT_DIR
 
-            # Restart services
-            sudo systemctl restart php8.2-fpm
+            # Restart services (PHP 8.3)
+            sudo systemctl restart php8.3-fpm
             sudo systemctl restart laravel-worker || sudo systemctl start laravel-worker
 
             # Keep last 5 releases
