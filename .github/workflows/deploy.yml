@@ -44,9 +44,9 @@ jobs:
         id: vars
         run: echo "RELEASE=$(date +%s)" >> $GITHUB_ENV
 
-      # Deploy to EC2 using rsync
+      # Deploy to EC2 using rsync (FIXED ACTION VERSION + INPUT NAME)
       - name: Upload to EC2 (rsync)
-        uses: burnett01/rsync-deployments@v3.0.0
+        uses: Burnett01/rsync-deployments@7.0.2
         with:
           switches: -avz --delete --omit-dir-times --no-perms
           path: .
@@ -54,7 +54,7 @@ jobs:
           remote_host: ${{ secrets.DEPLOY_HOST }}
           remote_user: ${{ secrets.DEPLOY_USER }}
           remote_port: ${{ secrets.SSH_PORT }}
-          private_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
+          remote_key: ${{ secrets.DEPLOY_PRIVATE_KEY }}
 
       # Run commands on EC2
       - name: Run remote release commands
