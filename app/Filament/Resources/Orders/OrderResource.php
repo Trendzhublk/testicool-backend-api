@@ -6,10 +6,12 @@ use App\Filament\Resources\Orders\Pages\EditOrder;
 use App\Filament\Resources\Orders\Pages\ListOrders;
 use App\Models\Order;
 use BackedEnum;
+use Filament\Facades\Filament;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\BadgeColumn;
@@ -29,6 +31,9 @@ class OrderResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
+        $user = auth()->user();
+        $isSalesAgentOnly = $user?->isSalesAgent() && !$user->isAdmin();
+
         return $schema
             ->columns(2)
             ->components([
@@ -50,15 +55,51 @@ class OrderResource extends Resource
                     ->relationship('shippingAgent', 'name')
                     ->searchable()
                     ->preload()
-                    ->label('Shipping agent'),
+                    ->label('Shipping agent')
+                    ->disabled(fn() => $isSalesAgentOnly),
                 Select::make('sales_agent_id')
                     ->relationship('salesAgent', 'name')
                     ->searchable()
                     ->preload()
-                    ->label('Sales agent'),
+                    ->label('Sales agent')
+                    ->disabled(fn() => $isSalesAgentOnly),
                 Textarea::make('status_note')
                     ->label('Status note')
                     ->rows(3)
+                    ->columnSpanFull(),
+
+                // Item snapshot (read-only)
+                Section::make('Item')
+                    ->schema([
+                        TextInput::make('title_snapshot')
+                            ->label('Product')
+                            ->disabled(),
+                        TextInput::make('sku_snapshot')
+                            ->label('SKU')
+                            ->disabled(),
+                        TextInput::make('size_snapshot')
+                            ->label('Size')
+                            ->disabled(),
+                        TextInput::make('color_snapshot')
+                            ->label('Color')
+                            ->disabled(),
+                        TextInput::make('color_hex_snapshot')
+                            ->label('Color Hex')
+                            ->disabled(),
+                        TextInput::make('qty')
+                            ->label('Qty')
+                            ->numeric()
+                            ->disabled(),
+                        TextInput::make('price_snapshot')
+                            ->label('Unit price')
+                            ->numeric()
+                            ->disabled(),
+                        TextInput::make('line_total')
+                            ->label('Line total')
+                            ->numeric()
+                            ->disabled(),
+                    ])
+                    ->columns(2)
                     ->columnSpanFull(),
             ]);
     }
@@ -71,6 +112,22 @@ class OrderResource extends Resource
                     ->label('Tracking #')
                     ->copyable()
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('sku_snapshot')
+                    ->label('SKU')
+                    ->sortable(),
+                TextColumn::make('title_snapshot')
+                    ->label('Product')
+                    ->wrap()
+                    ->sortable(),
+                TextColumn::make('size_snapshot')
+                    ->label('Size')
+                    ->sortable(),
+                TextColumn::make('color_snapshot')
+                    ->label('Color')
+                    ->sortable(),
+                TextColumn::make('qty')
+                    ->label('Qty')
                     ->sortable(),
                 TextColumn::make('customer_name')
                     ->label('Customer')
@@ -136,8 +193,18 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery();
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user && $user->isSalesAgent() && ! $user->isAdmin()) {
+            $query->whereHas('address', function (Builder $q) use ($user) {
+                $q->where('country_code', $user->country_code);
+            });
+        }
+
+        return $query;
     }
+
 
     public static function getPages(): array
     {

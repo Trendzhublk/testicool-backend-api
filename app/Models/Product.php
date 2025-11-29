@@ -57,7 +57,18 @@ class Product extends Model
     public function getCoverImageUrlAttribute()
     {
         $cover = $this->images->firstWhere('sort_order', 1);
-        return $cover?->path ?? $this->images->sortBy('sort_order')->first()?->path;
+        $path = $cover?->path ?? $this->images->sortBy('sort_order')->first()?->path;
+
+        if (!$path) {
+            return null;
+        }
+
+        $base = rtrim(config('filesystems.disks.s3.url', config('app.asset_url', '')), '/');
+        if ($base && !str_starts_with($path, 'http')) {
+            return $base . '/' . ltrim($path, '/');
+        }
+
+        return $path;
     }
 
     public function getRouteKeyName()

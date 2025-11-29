@@ -4,23 +4,39 @@ namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
-use App\Models\Currency;
 use App\Models\Product;
+use App\Services\CurrencyConversionService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    public function __construct(private CurrencyConversionService $currencyService) {}
+
     public function index(Request $request)
     {
+        $supported = $this->currencyService->supportedCodes();
+
         $request->validate([
-            'currency' => 'nullable|string|exists:currencies,code',
+            'currency' => ['nullable', 'string', Rule::in($supported)],
             'search'   => 'nullable|string|max:120',
             'featured' => 'nullable|boolean',
             'per_page' => 'nullable|integer|min:1|max:50',
         ]);
 
-        $currency = Currency::where('code', $request->currency ?? 'USD')->first();
-        $request->merge(['currency_model' => $currency]);
+        $currencyCode = $this->currencyService->normalize($request->currency);
+        $currencyRate = $this->currencyService->rate($currencyCode);
+        $currencySymbol = $this->currencyService->symbol($currencyCode);
+        $request->merge([
+            'currency_code' => $currencyCode,
+            'currency_rate' => $currencyRate,
+            'currency_symbol' => $currencySymbol,
+        ]);
+        $currencyPayload = [
+            'code' => $currencyCode,
+            'symbol' => $currencySymbol,
+            'rate_to_base' => $currencyRate,
+        ];
 
         $q = Product::query()
             ->where('is_active', true)
@@ -46,7 +62,11 @@ class ProductController extends Controller
         $perPage = $request->per_page ?? 12;
         $products = $q->orderBy('created_at', 'desc')->paginate($perPage);
 
-        return ProductResource::collection($products);
+        return ProductResource::collection($products)
+            ->additional([
+                'currency' => $currencyPayload,
+                'currencies' => $this->currencyService->currenciesWithRates(),
+            ]);
     }
 
     public function show(Request $request, Product $product)
@@ -55,8 +75,19 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product not available'], 404);
         }
 
-        $currency = Currency::where('code', $request->currency ?? 'USD')->first();
-        $request->merge(['currency_model' => $currency]);
+        $currencyCode = $this->currencyService->normalize($request->currency);
+        $currencyRate = $this->currencyService->rate($currencyCode);
+        $currencySymbol = $this->currencyService->symbol($currencyCode);
+        $request->merge([
+            'currency_code' => $currencyCode,
+            'currency_rate' => $currencyRate,
+            'currency_symbol' => $currencySymbol,
+        ]);
+        $currencyPayload = [
+            'code' => $currencyCode,
+            'symbol' => $currencySymbol,
+            'rate_to_base' => $currencyRate,
+        ];
 
         $product->load([
             'images:id,product_id,variant_id,path,sort_order,alt_text',
@@ -66,6 +97,10 @@ class ProductController extends Controller
             'variants.size.charts:id,size_id,unit,min_value,max_value', // for PDP size guide
         ]);
 
-        return new ProductResource($product);
+        return (new ProductResource($product))
+            ->additional([
+                'currency' => $currencyPayload,
+                'currencies' => $this->currencyService->currenciesWithRates(),
+            ]);
     }
 }

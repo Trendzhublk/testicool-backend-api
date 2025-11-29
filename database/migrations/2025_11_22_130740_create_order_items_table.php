@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('provider_ref')->nullable(); // payment_intent id
 
             $table->decimal('amount', 10, 2);
-            $table->string('currency_code', 3);
+            $table->string('currency_code', 3)->default('GBP');
 
             $table->enum('status', [
                 'initiated',

@@ -9,10 +9,9 @@ class ProductVariantResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $currency = $request->get('currency_model'); // injected in controller
-        $rate = $currency?->rate_to_base ?? 1;
-        $symbol = $currency?->symbol ?? '$';
-        $code = $currency?->code ?? 'USD';
+        $rate = (float) ($request->get('currency_rate', 1));
+        $symbol = $request->get('currency_symbol', '£');
+        $code = $request->get('currency_code', 'GBP');
 
         $basePrice = $this->price_override ?? $this->product?->base_price ?? 0;
         $converted = round($basePrice * $rate, 2);
@@ -20,7 +19,6 @@ class ProductVariantResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
-            'price_base' => (float) $basePrice,
             'price' => $converted,
             'currency' => [
                 'code' => $code,

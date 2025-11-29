@@ -38,13 +38,13 @@ class Address extends Model
         'billing_address' => 'array',
     ];
 
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class, 'currency_code', 'code');
-    }
-
     public function country()
     {
         return $this->belongsTo(Country::class, 'country_code', 'code');
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'order_id');
     }
 }

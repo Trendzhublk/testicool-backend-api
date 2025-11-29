@@ -26,17 +26,9 @@ class ShippingRatesTable
                 TextColumn::make('rate_basis')->label('Rate type')->badge(),
                 TextColumn::make('charge_type')->label('Charge')->badge(),
                 TextColumn::make('tax_percent')->label('Tax %')->numeric(decimalPlaces: 3),
-                TextColumn::make('currency_rates')
-                    ->label('Rates')
-                    ->formatStateUsing(function ($state) {
-                        if (!is_array($state) || empty($state)) {
-                            return '-';
-                        }
-                        $first = $state[array_key_first($state)] ?? [];
-                        $cur = isset($first['currency']) ? strtoupper($first['currency']) : '';
-                        $amt = isset($first['amount']) ? number_format((float) $first['amount'], 2) : '-';
-                        return trim("{$cur} {$amt}");
-                    }),
+                TextColumn::make('amount')
+                    ->label('Amount (GBP)')
+                    ->numeric(decimalPlaces: 2),
                 TextColumn::make('priority')->sortable(),
                 IconColumn::make('is_active')->boolean()->label('Active'),
             ])
@@ -49,14 +41,6 @@ class ShippingRatesTable
                     ->relationship('agent', 'name')
                     ->searchable()
                     ->preload(),
-                SelectFilter::make('currency')
-                    ->options([
-                        'GBP' => 'GBP',
-                        'EUR' => 'EUR',
-                        'USD' => 'USD',
-                        'AED' => 'AED',
-                        'AUD' => 'AUD',
-                    ]),
             ])
             ->defaultSort('priority')
             ->recordActions([

@@ -17,7 +17,7 @@ class ProductsTable
             ->columns([
                 TextColumn::make('title')->sortable()->searchable(),
                 TextColumn::make('slug')->sortable()->searchable(),
-                TextColumn::make('base_price')->money('USD', divideBy: 1)->label('Base Price'),
+                TextColumn::make('base_price')->money('GBP', divideBy: 1)->label('Base Price'),
                 IconColumn::make('is_active')->boolean()->label('Active'),
                 IconColumn::make('is_featured')->boolean()->label('Featured'),
             ])

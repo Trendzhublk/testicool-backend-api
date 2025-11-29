@@ -6,7 +6,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Repeater;
 use Illuminate\Support\Facades\DB;
 use Filament\Schemas\Schema;
 
@@ -56,33 +55,12 @@ class ShippingRateForm
                     ])
                     ->default('flat'),
                 TextInput::make('amount')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->helperText('Use currency rates repeater below.'),
-                Repeater::make('rates')
-                    ->label('Currency rates')
-                    ->schema([
-                        Select::make('currency')
-                            ->options(fn() => DB::table('currencies')->orderBy('code')->pluck('code', 'code'))
-                            ->required()
-                            ->searchable(),
-                        TextInput::make('amount')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->step('0.01')
-                            ->label('Amount'),
-                        TextInput::make('tax_percent')
-                            ->numeric()
-                            ->minValue(0)
-                            ->step('0.001')
-                            ->label('Tax %')
-                            ->default(0),
-                    ])
-                    ->addActionLabel('Add currency rate')
-                    ->columns(3)
                     ->required()
-                    ->statePath('currency_rates'),
+                    ->numeric()
+                    ->minValue(0)
+                    ->step('0.01')
+                    ->label('Amount (GBP)')
+                    ->helperText('Always enter base currency (GBP). API will convert for clients.'),
                 TextInput::make('weight_min')
                     ->numeric()
                     ->minValue(0)

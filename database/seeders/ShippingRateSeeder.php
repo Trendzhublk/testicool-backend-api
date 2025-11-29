@@ -21,29 +21,21 @@ class ShippingRateSeeder extends Seeder
             ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'uk', 'country_code' => 'GB', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 22, 'currency' => 'GBP', 'priority' => 20],
 
             // United States (US)
-            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'us', 'country_code' => 'US', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 22, 'currency' => 'USD', 'priority' => 10],
-            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'us', 'country_code' => 'US', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 26, 'currency' => 'USD', 'priority' => 20],
+            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'us', 'country_code' => 'US', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 22, 'currency' => 'GBP', 'priority' => 10],
+            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'us', 'country_code' => 'US', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 26, 'currency' => 'GBP', 'priority' => 20],
 
             // Canada (CA) - using USD rates as placeholder
-            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'us', 'country_code' => 'CA', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 24, 'currency' => 'USD', 'priority' => 10],
-            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'us', 'country_code' => 'CA', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 28, 'currency' => 'USD', 'priority' => 20],
+            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'us', 'country_code' => 'CA', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 24, 'currency' => 'GBP', 'priority' => 10],
+            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'us', 'country_code' => 'CA', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 28, 'currency' => 'GBP', 'priority' => 20],
 
             // Australia (AU)
-            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'au', 'country_code' => 'AU', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 25, 'currency' => 'AUD', 'priority' => 10],
-            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'au', 'country_code' => 'AU', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 30, 'currency' => 'AUD', 'priority' => 20],
+            ['code' => 'dhl_express', 'label' => 'DHL Express Worldwide', 'carrier' => 'DHL', 'shipping_agent_id' => $dhl?->id, 'region' => 'au', 'country_code' => 'AU', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 25, 'currency' => 'GBP', 'priority' => 10],
+            ['code' => 'fedex_priority', 'label' => 'FedEx International Priority', 'carrier' => 'FedEx', 'shipping_agent_id' => $fedex?->id, 'region' => 'au', 'country_code' => 'AU', 'rate_basis' => 'country', 'charge_type' => 'flat', 'tax_percent' => 0, 'amount' => 30, 'currency' => 'GBP', 'priority' => 20],
         ];
 
         ShippingRate::truncate();
 
         foreach ($rates as $rate) {
-            $rate['currency_rates'] = [
-                [
-                    'currency' => $rate['currency'],
-                    'amount' => $rate['amount'],
-                    'tax_percent' => $rate['tax_percent'],
-                ],
-            ];
-
             ShippingRate::create($rate);
         }
     }

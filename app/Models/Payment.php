@@ -28,9 +28,4 @@ class Payment extends Model
     {
         return $this->belongsTo(Order::class);
     }
-
-    public function currency()
-    {
-        return $this->belongsTo(Currency::class, 'currency_code', 'code');
-    }
 }

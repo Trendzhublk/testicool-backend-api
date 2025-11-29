@@ -40,7 +40,7 @@ class AddressResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // \App\Filament\Resources\Addresses\AddressResource\RelationManagers\OrdersRelationManager::class,
         ];
     }
 
@@ -57,7 +57,7 @@ class AddressResource extends Resource
     {
         $user = auth()->user();
 
-        return ($user?->isAdmin() || $user?->isSalesAgent()) ?? false;
+        return $user?->isAdmin() ?? false;
     }
 
     public static function getEloquentQuery(): Builder
@@ -74,24 +74,12 @@ class AddressResource extends Resource
 
     public static function canViewAny(): bool
     {
-        $user = auth()->user();
-
-        return ($user?->isAdmin() || $user?->isSalesAgent()) ?? false;
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     public static function canView(Model $record): bool
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            return false;
-        }
-
-        if ($user->isAdmin()) {
-            return true;
-        }
-
-        return $user->isSalesAgent() && $record->country_code === $user->country_code;
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     public static function canCreate(): bool
@@ -101,17 +89,7 @@ class AddressResource extends Resource
 
     public static function canEdit(Model $record): bool
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            return false;
-        }
-
-        if ($user->isAdmin()) {
-            return true;
-        }
-
-        return $user->isSalesAgent() && $record->country_code === $user->country_code;
+        return auth()->user()?->isAdmin() ?? false;
     }
 
     public static function canDelete(Model $record): bool

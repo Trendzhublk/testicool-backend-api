@@ -66,8 +66,7 @@ class ProductResource extends JsonResource
 
             // price range for shop listing (min-max)
             'price_range' => $this->whenLoaded('variants', function () use ($request) {
-                $currency = $request->get('currency_model');
-                $rate = $currency?->rate_to_base ?? 1;
+                $rate = (float) ($request->get('currency_rate', 1));
 
                 $prices = $this->variants
                     ->map(fn($variant) => $variant->price_override ?? $this->base_price)

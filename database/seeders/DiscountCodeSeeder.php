@@ -68,7 +68,11 @@ class DiscountCodeSeeder extends Seeder
         foreach ($codes as $code) {
             DiscountCode::updateOrCreate(
                 ['code' => $code['code']],
-                $code
+                array_merge($code, [
+                    'stripe_coupon_id' => null,
+                    'stripe_promotion_code_id' => null,
+                    'usage_count' => 0,
+                ])
             );
         }
     }

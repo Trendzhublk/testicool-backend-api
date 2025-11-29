@@ -14,6 +14,9 @@ class Order extends Model
         'product_id',
         'variant_id',
         'sku_snapshot',
+        'size_snapshot',
+        'color_snapshot',
+        'color_hex_snapshot',
         'title_snapshot',
         'price_snapshot',
         'qty',
@@ -40,6 +43,11 @@ class Order extends Model
     public function parent()
     {
         return $this->belongsTo(self::class, 'order_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'order_id');
     }
 
     public function children()

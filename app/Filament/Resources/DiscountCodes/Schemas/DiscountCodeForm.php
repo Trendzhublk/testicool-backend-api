@@ -50,6 +50,7 @@ class DiscountCodeForm
                 TextInput::make('currency')
                     ->maxLength(3)
                     ->label('Currency (for amount codes)')
+                    ->default(config('currency.base', 'GBP'))
                     ->helperText('Leave empty for percent codes. ISO code e.g. GBP.'),
                 TextInput::make('min_subtotal')
                     ->numeric()

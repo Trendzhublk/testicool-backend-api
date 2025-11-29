@@ -21,10 +21,7 @@ return new class extends Migration
             $table->string('customer_email')->index();
             $table->string('customer_phone')->nullable();
 
-            $table->string('currency_code', 3)->default('USD');
-            $table->foreign('currency_code')
-                ->references('code')->on('currencies')
-                ->restrictOnDelete();
+            $table->string('currency_code', 3)->default('GBP');
 
             $table->decimal('subtotal', 10, 2)->default(0);
             $table->decimal('discount_total', 10, 2)->default(0);

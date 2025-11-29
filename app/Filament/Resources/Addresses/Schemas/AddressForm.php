@@ -19,9 +19,10 @@ class AddressForm
                 Section::make('Order Info')
                     ->schema([
                         TextInput::make('order_no')->required()->maxLength(255),
-                        Select::make('currency_code')
-                            ->relationship('currency', 'code')
+                        TextInput::make('currency_code')
                             ->label('Currency')
+                            ->default(config('currency.base', 'GBP'))
+                            ->maxLength(3)
                             ->required(),
                         Select::make('country_code')
                             ->relationship('country', 'name')
@@ -60,6 +61,7 @@ class AddressForm
                         TextInput::make('customer_email')->email()->required(),
                         TextInput::make('customer_phone')->maxLength(255),
                     ]),
+
                 Section::make('Addresses')
                     ->schema([
                         KeyValue::make('shipping_address')->label('Shipping address'),

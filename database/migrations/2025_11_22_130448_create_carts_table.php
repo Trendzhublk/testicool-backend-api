@@ -16,10 +16,7 @@ return new class extends Migration
 
             $table->string('session_id')->index(); // required for guest carts
 
-            $table->string('currency_code', 3)->default('USD');
-            $table->foreign('currency_code')
-                ->references('code')->on('currencies')
-                ->restrictOnDelete();
+            $table->string('currency_code', 3)->default('GBP');
 
             $table->timestamps();
 

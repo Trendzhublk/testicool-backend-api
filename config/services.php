@@ -5,6 +5,7 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'default_currency' => env('STRIPE_DEFAULT_CURRENCY', env('CURRENCY_BASE', 'GBP')),
         'payment_method_types' => array_filter(
             array_map('trim', explode(',', env('STRIPE_PAYMENT_METHOD_TYPES', 'card')))
         ),

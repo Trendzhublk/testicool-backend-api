@@ -41,7 +41,6 @@ class DatabaseSeeder extends Seeder
         \App\Models\Color::truncate();
         \App\Models\Size::truncate();
         \App\Models\SizeChart::truncate();
-        \App\Models\Currency::truncate();
         \App\Models\ShippingRate::truncate();
         \App\Models\ShippingAgent::truncate();
         \App\Models\SalesAgentAssignment::truncate();
@@ -54,7 +53,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CountrySeeder::class,
             RoleSeeder::class,
-            CurrencySeeder::class,
             ColorSeeder::class,
             SizeSeeder::class,
             SizeChartSeeder::class,

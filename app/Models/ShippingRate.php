@@ -53,14 +53,8 @@ class ShippingRate extends Model
     protected static function booted(): void
     {
         static::saving(function (ShippingRate $rate) {
-            $rates = $rate->currency_rates ?? [];
-
-            if (is_array($rates) && count($rates) > 0) {
-                $first = $rates[0];
-                $rate->currency = $first['currency'] ?? $rate->currency;
-                $rate->amount = $first['amount'] ?? $rate->amount;
-                $rate->tax_percent = $first['tax_percent'] ?? $rate->tax_percent;
-            }
+            // Always store base currency amounts (GBP by default); currency_rates is ignored for persistence.
+            $rate->currency = config('currency.base', 'GBP');
         });
     }
 }

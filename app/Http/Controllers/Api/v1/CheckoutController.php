@@ -7,18 +7,24 @@ use App\Models\Country;
 use App\Models\ShippingAgent;
 use App\Models\ShippingRate;
 use App\Services\CheckoutService;
+use App\Services\CurrencyConversionService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CheckoutController extends Controller
 {
-    public function __construct(private CheckoutService $checkoutService) {}
+    public function __construct(
+        private CheckoutService $checkoutService,
+        private CurrencyConversionService $currencyService
+    ) {}
 
     public function validateDiscount(Request $request)
     {
+        $supported = $this->currencyService->supportedCodes();
+
         $validated = $request->validate([
             'code' => ['required', 'string', 'max:50'],
-            'currency' => ['required', 'string', 'size:3'],
+            'currency' => ['required', 'string', 'size:3', Rule::in($supported)],
             'subtotal' => ['required', 'numeric', 'min:0'],
             'shipping_total' => ['required', 'numeric', 'min:0'],
             'total_before_discount' => ['required', 'numeric', 'min:0'],
@@ -52,8 +58,11 @@ class CheckoutController extends Controller
 
     public function shippingRates(Request $request)
     {
+        $supported = $this->currencyService->supportedCodes();
+
         $validated = $request->validate([
             'country' => ['nullable', 'string', 'max:100'],
+            'currency' => ['nullable', 'string', 'size:3', Rule::in($supported)],
         ]);
 
         $country = $validated['country'] ?? null;
@@ -68,6 +77,9 @@ class CheckoutController extends Controller
                 $country = strtoupper($country);
             }
         }
+
+        $targetCurrency = $this->currencyService->normalize($validated['currency'] ?? null);
+        $baseCurrency = $this->currencyService->base();
 
         $rates = ShippingRate::query()
             ->where('is_active', true)
@@ -99,13 +111,31 @@ class CheckoutController extends Controller
                 'estimated_days',
                 'priority',
                 'notes',
-                'currency_rates',
             ]);
 
-        $withAgents = $rates->map(function ($rate) {
-            $payload = $rate->makeHidden(['amount', 'currency'])->toArray();
+        $withAgents = $rates->map(function ($rate) use ($targetCurrency, $baseCurrency) {
+            $finalBase = (float) $rate->amount;
+            if ($rate->charge_type === 'flat' && $rate->tax_percent > 0) {
+                $finalBase += ($rate->amount * $rate->tax_percent) / 100;
+            }
+
+            $currencyRates = collect($this->currencyService->supportedCodes())->map(function ($code) use ($finalBase) {
+                return [
+                    'currency' => $code,
+                    'amount' => $this->currencyService->fromBase($finalBase, $code),
+                    'symbol' => $this->currencyService->symbol($code),
+                ];
+            })->values();
+
+            $payload = $rate->makeHidden(['currency_rates'])->toArray();
 
             return array_merge($payload, [
+                'base_currency' => $baseCurrency,
+                'base_amount' => (float) $rate->amount,
+                'base_total' => $finalBase,
+                'amount' => $this->currencyService->fromBase($finalBase, $targetCurrency),
+                'currency' => $targetCurrency,
+                'currency_rates' => $currencyRates,
                 'shipping_agent' => $rate->agent?->only(['id', 'name', 'email', 'phone']),
             ]);
         });
@@ -160,6 +190,8 @@ class CheckoutController extends Controller
 
     public function createStripeSession(Request $request)
     {
+        $supported = $this->currencyService->supportedCodes();
+
         $validated = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'integer'],
@@ -170,7 +202,7 @@ class CheckoutController extends Controller
             'items.*.color' => ['nullable', 'string', 'max:50'],
             'items.*.variantId' => ['nullable'],
 
-            'currency' => ['required', 'string', 'size:3'],
+            'currency' => ['required', 'string', 'size:3', Rule::in($supported)],
             'successUrl' => ['required', 'url'],
             'cancelUrl' => ['required', 'url'],
 
