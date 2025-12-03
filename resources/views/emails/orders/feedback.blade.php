@@ -120,7 +120,7 @@
         }
 
         .row-content.stack {
-            background-color: #ffffff;
+            background-color: #2b2a2e;
         }
 
         .column {
