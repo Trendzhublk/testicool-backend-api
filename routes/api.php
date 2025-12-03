@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\v1\StripeWebhookController;
 use App\Http\Controllers\Api\v1\CountryController;
 use App\Http\Controllers\Api\v1\OrderTrackingController;
 use App\Http\Controllers\Api\v1\PaymentMethodController;
+use App\Http\Controllers\Api\v1\FeedbackController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,6 +28,7 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::post('/stripe/webhook', StripeWebhookController::class);
+    Route::post('/feedbacks', [FeedbackController::class, 'store']);
 
     Route::get('/orders/track/{tracking}', [OrderTrackingController::class, 'track']);
     Route::post('/orders/{order}/status', [OrderTrackingController::class, 'updateStatus']);

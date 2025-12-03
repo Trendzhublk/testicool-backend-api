@@ -3,14 +3,13 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Address;
-use App\Models\Order;
-use App\Models\Payment;
 use App\Models\DiscountCodeUsage;
-use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+=======
+>>>>>>> parent of 829bb1a (updated)
 use Stripe\Webhook;
 use App\Mail\PaymentStatusMail;
 use App\Mail\PaymentInvoiceMail;
@@ -36,17 +35,8 @@ class StripeWebhookController extends Controller
             return response()->json(['message' => 'Invalid webhook signature'], 400);
         }
 
-        switch ($event->type) {
-            case 'checkout.session.completed':
-                $this->handleCheckoutSessionCompleted($event->data->object);
-                break;
-            case 'checkout.session.async_payment_failed':
-            case 'checkout.session.expired':
-                $this->handleCheckoutSessionFailed($event->data->object, $event->type);
-                break;
-            case 'payment_intent.payment_failed':
-                $this->handlePaymentIntentFailed($event->data->object);
-                break;
+        if ($event->type === 'checkout.session.completed') {
+            $this->handleCheckoutSessionCompleted($event->data->object);
         }
 
         return response()->json(['received' => true]);
@@ -58,6 +48,7 @@ class StripeWebhookController extends Controller
             return;
         }
 
+<<<<<<< HEAD
         // Find Address by embedded session id in shipping_address OR notes fallback
         $address = Address::whereJsonContains('shipping_address->stripe_session_id', $session->id)
             ->orWhere('notes', 'like', '%' . $session->id . '%')
@@ -156,6 +147,8 @@ class StripeWebhookController extends Controller
         }
 
         // ---- existing discount usage logic stays intact ----
+=======
+>>>>>>> parent of 829bb1a (updated)
         $usage = DiscountCodeUsage::where('stripe_checkout_session_id', $session->id)->first();
         if (!$usage) {
             return;
@@ -177,6 +170,7 @@ class StripeWebhookController extends Controller
             }
         }
     }
+<<<<<<< HEAD
 
     private function handleCheckoutSessionFailed($session, string $reason): void
     {
@@ -351,4 +345,6 @@ class StripeWebhookController extends Controller
 
         $mail->send($mailable);
     }
+=======
+>>>>>>> parent of 829bb1a (updated)
 }

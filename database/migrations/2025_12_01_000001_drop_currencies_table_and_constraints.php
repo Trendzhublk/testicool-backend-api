@@ -8,30 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (Schema::hasTable('carts')) {
-            Schema::table('carts', function (Blueprint $table) {
-                if (Schema::hasColumn('carts', 'currency_code')) {
-                    try {
-                        $table->dropForeign(['currency_code']);
-                    } catch (\Throwable $e) {
-                        // FK may already be removed; ignore.
-                    }
-                }
-            });
-        }
-
-        if (Schema::hasTable('addresses')) {
-            Schema::table('addresses', function (Blueprint $table) {
-                if (Schema::hasColumn('addresses', 'currency_code')) {
-                    try {
-                        $table->dropForeign(['currency_code']);
-                    } catch (\Throwable $e) {
-                        // FK may already be removed; ignore.
-                    }
-                }
-            });
-        }
-
         Schema::dropIfExists('currencies');
     }
 

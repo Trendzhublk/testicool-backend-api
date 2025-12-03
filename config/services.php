@@ -44,4 +44,8 @@ return [
         ],
     ],
 
+    'feedback' => [
+        'url' => env('FEEDBACK_URL', 'https://main.d36wz4kndhn356.amplifyapp.com/feedback'),
+    ],
+
 ];

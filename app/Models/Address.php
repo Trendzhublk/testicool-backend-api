@@ -47,4 +47,9 @@ class Address extends Model
     {
         return $this->hasMany(Order::class, 'order_id');
     }
+
+    public function feedback()
+    {
+        return $this->hasMany(Feedback::class, 'address_id');
+    }
 }

@@ -84,4 +84,5 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'sales_agent_id');
     }
+
 }

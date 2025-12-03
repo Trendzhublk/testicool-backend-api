@@ -37,7 +37,9 @@ return [
     |
     */
     'provider' => [
-        'url' => env('CURRENCY_PROVIDER_URL', 'https://api.exchangerate.host/latest'),
+        // Default is a free, no-auth API that returns all rates for the base currency.
+        // Use {base} placeholder to inject the base currency code.
+        'url' => env('CURRENCY_PROVIDER_URL', 'https://open.er-api.com/v6/latest/{base}'),
         'cache_ttl' => (int) env('CURRENCY_RATE_CACHE_MINUTES', 360),
     ],
 ];

@@ -63,12 +63,13 @@ class CurrencyConversionService
             return $this->resolvedRates;
         }
 
-        $cacheKey = 'currency.rates.' . $this->baseCurrency;
+        $providerUrl = (string) config('currency.provider.url');
+        $cacheKey = 'currency.rates.' . $this->baseCurrency . '.' . md5($providerUrl . implode(',', $this->supportedCodes()));
 
         $this->resolvedRates = Cache::remember(
             $cacheKey,
             now()->addMinutes($this->cacheTtl),
-            function () {
+            function () use ($providerUrl) {
                 $symbols = array_filter(
                     $this->supportedCodes(),
                     fn($code) => $code !== $this->baseCurrency
@@ -78,10 +79,16 @@ class CurrencyConversionService
                     return [$this->baseCurrency => 1.0];
                 }
 
-                $response = Http::timeout(8)->get(config('currency.provider.url'), [
-                    'base' => $this->baseCurrency,
-                    'symbols' => implode(',', $symbols),
-                ]);
+                // Support both placeholder and query-parameter style providers.
+                if (str_contains($providerUrl, '{base}')) {
+                    $url = str_replace('{base}', $this->baseCurrency, $providerUrl);
+                    $response = Http::timeout(8)->get($url);
+                } else {
+                    $response = Http::timeout(8)->get($providerUrl, [
+                        'base' => $this->baseCurrency,
+                        'symbols' => implode(',', $symbols),
+                    ]);
+                }
 
                 $rates = [$this->baseCurrency => 1.0];
 

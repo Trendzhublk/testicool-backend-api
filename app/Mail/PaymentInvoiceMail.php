@@ -11,6 +11,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PaymentInvoiceMail extends Mailable
 {
@@ -46,6 +47,15 @@ class PaymentInvoiceMail extends Mailable
 
     public function attachments(): array
     {
-        return [];
+        $pdf = Pdf::loadView('emails.payment.invoice-pdf', [
+            'address' => $this->address,
+            'orderLines' => $this->orderLines,
+            'payment' => $this->payment,
+        ])->setPaper('a4');
+
+        return [
+            \Illuminate\Mail\Mailables\Attachment::fromData(fn() => $pdf->output(), "invoice-{$this->address->order_no}.pdf")
+                ->withMime('application/pdf'),
+        ];
     }
 }

@@ -2,20 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Address;
 use App\Models\DiscountCode;
 use App\Models\DiscountCodeUsage;
 use App\Models\Country;
-use App\Models\Order;
-use App\Models\Payment;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\ShippingRate;
 use App\Services\CurrencyConversionService;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Stripe\StripeClient;
 
 class CheckoutService
@@ -52,6 +46,7 @@ class CheckoutService
             return ['valid' => false, 'message' => 'Code not valid for this region.'];
         }
 
+<<<<<<< HEAD
         // Enforce email presence for email-scoped codes
         $requiresEmail = $discount->once_per_email
             || $discount->max_redemptions_per_user
@@ -68,6 +63,11 @@ class CheckoutService
                 $prettyMin = number_format($minConverted, 2);
                 return ['valid' => false, 'message' => "Minimum subtotal required is {$prettyMin}."];
             }
+=======
+        $min = (float)($discount->min_subtotal ?? 0);
+        if ($min > 0 && (float)$context['subtotal'] < $min) {
+            return ['valid' => false, 'message' => "Minimum subtotal required is {$min}."];
+>>>>>>> parent of 829bb1a (updated)
         }
 
         if ($discount->starts_at && $now->lt($discount->starts_at)) {
@@ -80,7 +80,7 @@ class CheckoutService
 
         if ($discount->allowed_emails) {
             $allowed = collect($discount->allowed_emails)
-                ->map(fn($email) => strtolower($email))
+                ->map(fn ($email) => strtolower($email))
                 ->filter()
                 ->values()
                 ->all();
@@ -122,6 +122,7 @@ class CheckoutService
             return ['valid' => false, 'message' => 'Add your email to use this code.'];
         }
 
+<<<<<<< HEAD
         $totalBefore = (float) ($context['total_before_discount']
             ?? (($context['subtotal'] ?? 0) + ($context['shipping_total'] ?? 0)));
 
@@ -141,13 +142,30 @@ class CheckoutService
         } else {
             $percentOff = (float) $discount->value;
         }
+=======
+        if ($discount->type === 'amount') {
+            $discountCurrency = strtolower($discount->currency ?? $currency);
+            if (!$discountCurrency) {
+                return ['valid' => false, 'message' => 'Currency is required for this discount.'];
+            }
+
+            if ($discount->currency && $discountCurrency !== $currency) {
+                return ['valid' => false, 'message' => 'Code not valid for this currency.'];
+            }
+        } else {
+            $discountCurrency = $currency;
+        }
+
+        $totalBefore = (float)($context['total_before_discount'] ?? ($context['subtotal'] ?? 0) + ($context['shipping_total'] ?? 0));
+        $amountOff = $discount->type === 'amount' ? (float) $discount->value : 0;
+        $percentOff = $discount->type === 'percent' ? (float) $discount->value : 0;
+>>>>>>> parent of 829bb1a (updated)
 
         $calculatedAmount = $this->calculateDiscountAmount([
             'type' => $discount->type,
             'amount_off' => $amountOff,
             'percent_off' => $percentOff,
         ], $totalBefore);
-
         $calculatedAmount = max(0, min($totalBefore, $calculatedAmount));
 
         return [
@@ -166,12 +184,16 @@ class CheckoutService
     /** ---------------- STRIPE SESSION ---------------- */
     public function createStripeCheckoutSession(array $payload): array
     {
+<<<<<<< HEAD
         $currencyCode = $this->currencyService->normalize(
             $payload['currency'] ?? $this->currencyService->base()
         );
         $currencyRate = $this->currencyService->rate($currencyCode);
         $currencySymbol = $this->currencyService->symbol($currencyCode);
         $currency = strtolower($currencyCode);
+=======
+        $currency = strtolower($payload['currency']);
+>>>>>>> parent of 829bb1a (updated)
         $customerEmail = strtolower(Arr::get($payload, 'customer.email', '')) ?: null;
         $region = Arr::get($payload, 'region', Arr::get($payload, 'shipping.region'));
 
@@ -196,7 +218,6 @@ class CheckoutService
             $currencyCode
         );
         $shippingCost = $shippingRate['amount'];
-        $shippingTax = $shippingRate['tax_amount'] ?? 0;
 
         // 3) Totals computed server-side
         $subtotal = collect($pricedItems)->sum(fn($i) => $i['unit_price'] * $i['quantity']);
@@ -206,7 +227,6 @@ class CheckoutService
         $discountAmount = 0;
         $discountModel = null;
         $discountPromotionCodeId = null;
-
         if (!empty($payload['discount']['code'])) {
             $discountResult = $this->validateDiscountCode(
                 $payload['discount']['code'],
@@ -232,6 +252,7 @@ class CheckoutService
 
         $grandTotal = max(0, $totalBeforeDiscount - $discountAmount);
 
+<<<<<<< HEAD
         // ---------------- DB WRITE (A) Create Address header + Order lines ----------------
         $address = DB::transaction(function () use (
             $payload,
@@ -338,6 +359,8 @@ class CheckoutService
         });
         // -------------------------------------------------------------------------------
 
+=======
+>>>>>>> parent of 829bb1a (updated)
         // 5) Stripe line items (products)
         $lineItems = $this->buildLineItems($pricedItems, $currency);
 
@@ -369,19 +392,15 @@ class CheckoutService
         $metadata = array_merge(
             Arr::get($payload, 'metadata', []),
             [
-                'address_id' => $address->id,
-                'order_no' => $address->order_no,
                 'region' => Arr::get($payload, 'region'),
                 'shipping_method' => Arr::get($payload, 'shipping.method', $shippingRate['code'] ?? null),
                 'shipping_label' => $shippingRate['label'] ?? null,
-                'shipping_tax' => $shippingTax,
                 'discount_code' => Arr::get($payload, 'discount.code'),
                 'discount_type' => $discountModel?->type,
                 'discount_value' => $discountModel?->value,
                 'subtotal' => $subtotal,
                 'shipping' => $shippingCost,
                 'discount' => $discountAmount,
-                'tax' => $shippingTax,
                 'total' => $grandTotal,
                 'currency' => $currencyCode,
                 'currency_rate' => $currencyRate,
@@ -398,13 +417,10 @@ class CheckoutService
             'customer_email' => $customerEmail,
             'metadata' => $metadata,
             'payment_method_types' => $this->resolvePaymentMethodTypes(Arr::get($payload, 'paymentMethod')),
+
+            // optional for better UX:
             'shipping_address_collection' => [
                 'allowed_countries' => $this->allowedCountriesForCheckout(),
-            ],
-            'payment_intent_data' => [
-                'metadata' => array_merge($metadata, [
-                    'session_source' => 'checkout',
-                ]),
             ],
         ];
 
@@ -412,6 +428,7 @@ class CheckoutService
 
         $session = $this->stripe->checkout->sessions->create($sessionPayload);
 
+<<<<<<< HEAD
         // backfill checkout_session_id onto the intent for webhook correlation
         if (!empty($session->payment_intent)) {
             try {
@@ -466,6 +483,8 @@ class CheckoutService
         });
         // -------------------------------------------------------------------------------
 
+=======
+>>>>>>> parent of 829bb1a (updated)
         if ($discountModel && $discountPromotionCodeId) {
             $this->reserveDiscountUsage(
                 $discountModel,
@@ -503,12 +522,14 @@ class CheckoutService
     private function calculateDiscountAmount(array $discountData, float $totalBeforeDiscount): float
     {
         if (($discountData['type'] ?? null) === 'percent') {
-            $percent = (float) ($discountData['percent_off'] ?? 0);
+            $percent = (float)($discountData['percent_off'] ?? 0);
+
             $amount = ($totalBeforeDiscount * $percent) / 100;
             return is_finite($amount) ? $amount : 0;
         }
 
-        $amount = (float) ($discountData['amount_off'] ?? 0);
+        $amount = (float)($discountData['amount_off'] ?? 0);
+
         return is_finite($amount) ? $amount : 0;
     }
 
@@ -534,6 +555,7 @@ class CheckoutService
         }, $items);
     }
 
+<<<<<<< HEAD
     private function applyDiscountToLineItems(array $lineItems, float $discountAmount): array
     {
         $discountCents = (int) round($discountAmount * 100);
@@ -586,11 +608,14 @@ class CheckoutService
      * - product must exist and be active
      * - unit price must come from server (variant override > product base_price)
      */
+=======
+>>>>>>> parent of 829bb1a (updated)
     private function verifyCartItems(array $items): array
     {
         $productIds = collect($items)->pluck('id')->unique()->values();
         $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
+<<<<<<< HEAD
         $variantIds = collect($items)->pluck('variantId')->filter()->unique()->values();
         $variants = $variantIds->isNotEmpty()
             ? ProductVariant::with(['color:id,name,hex', 'size:id,name'])
@@ -599,35 +624,18 @@ class CheckoutService
             ->keyBy('id')
             : collect();
 
+=======
+>>>>>>> parent of 829bb1a (updated)
         $verified = [];
-
         foreach ($items as $item) {
             $product = $products->get($item['id']);
-            if (!$product || !$product->is_active || !$product->in_stock) {
+            if (!$product || !$product->is_active) {
                 throw new \Exception("Invalid product in cart.");
             }
 
-            $variant = null;
-            if (!empty($item['variantId'])) {
-                $variant = $variants->get($item['variantId']);
-                if ($variant && (!$variant->is_active || (int) $variant->product_id !== (int) $product->id)) {
-                    $variant = null;
-                }
-            }
-
+            // Use server price (ignore FE price)
+            $unitPrice = (float) $product->price;
             $qty = (int) $item['quantity'];
-            if ($qty < 1) {
-                throw new \Exception('Quantity must be at least 1.');
-            }
-
-            if ($variant) {
-                $available = (int) $variant->stock_qty;
-                if ($available < $qty) {
-                    throw new \Exception("Insufficient stock for SKU {$variant->sku}.");
-                }
-            }
-
-            $unitPrice = (float) ($variant?->price_override ?? $product->base_price);
 
             $verified[] = [
                 'id' => $product->id,
@@ -635,14 +643,14 @@ class CheckoutService
                 'unit_price' => $unitPrice,
                 'unit_price_base' => $unitPrice,
                 'quantity' => $qty,
-                'size' => $variant?->size?->name ?? $item['size'] ?? null,
-                'color' => $variant?->color?->name ?? $item['color'] ?? null,
-                'color_hex' => $variant?->color?->hex ?? null,
-                'variantColorId' => $variant?->color_id,
-                'variantSizeId' => $variant?->size_id,
+                'size' => $item['size'] ?? null,
+                'color' => $item['color'] ?? null,
                 'variantId' => $item['variantId'] ?? null,
+<<<<<<< HEAD
                 'variantSku' => $variant?->sku ?? null,
                 'clientMeta' => $item['meta'] ?? null,
+=======
+>>>>>>> parent of 829bb1a (updated)
             ];
         }
 
@@ -652,7 +660,6 @@ class CheckoutService
     private function resolveShippingRate(?string $method, ?string $region, ?string $countryCode, string $currencyCode): array
     {
         $countryCode = $countryCode ? trim($countryCode) : null;
-
         if ($countryCode) {
             if (strlen($countryCode) > 2) {
                 $match = Country::query()
@@ -702,8 +709,22 @@ class CheckoutService
         $baseAmount = $this->currencyService->toBase($selectedAmount, $amountCurrency);
         $taxAmountBase = 0;
 
+<<<<<<< HEAD
         if ($rate->charge_type === 'flat' && $selectedTax > 0) {
             $taxAmountBase = ($baseAmount * $selectedTax) / 100;
+=======
+            if ($matched) {
+                $selectedAmount = (float) ($matched['amount'] ?? $selectedAmount);
+                $selectedTax = (float) ($matched['tax_percent'] ?? $selectedTax);
+                $selectedCurrency = strtoupper($matched['currency'] ?? $selectedCurrency);
+            }
+        }
+
+        // Apply tax on flat amounts; percentage charge_type remains as-is for caller to handle.
+        $finalAmount = $selectedAmount;
+        if ($rate->charge_type === 'flat' && $selectedTax > 0) {
+            $finalAmount += ($selectedAmount * $selectedTax) / 100;
+>>>>>>> parent of 829bb1a (updated)
         }
 
         $finalBase = $baseAmount + $taxAmountBase;
@@ -721,11 +742,17 @@ class CheckoutService
             'label' => $rate->label,
             'carrier' => $rate->carrier,
             'country_code' => $rate->country_code,
+<<<<<<< HEAD
             'amount' => $this->currencyService->fromBase($finalBase, $currencyUpper),
             'base_amount' => $baseAmount,
             'base_currency' => $baseCurrency,
             'tax_amount' => $this->currencyService->fromBase($taxAmountBase, $currencyUpper),
             'currency' => $currencyUpper,
+=======
+            'amount' => $finalAmount,
+            'base_amount' => $selectedAmount,
+            'currency' => $selectedCurrency,
+>>>>>>> parent of 829bb1a (updated)
             'priority' => $rate->priority,
             'rate_basis' => $rate->rate_basis,
             'charge_type' => $rate->charge_type,
@@ -772,9 +799,12 @@ class CheckoutService
             return $existingPromo->id;
         }
 
+<<<<<<< HEAD
         // Ensure there is a coupon to attach
         $couponPayload = ['duration' => 'once'];
 
+=======
+>>>>>>> parent of 829bb1a (updated)
         if ($discount->type === 'percent') {
             $couponPayload['percent_off'] = (float) $discount->value;
         } else {
@@ -855,10 +885,14 @@ class CheckoutService
         ];
 
         $candidate = $map[$selected] ?? $configured;
+<<<<<<< HEAD
         $types = array_values(array_unique(array_merge($candidate, $configured)));
 
         // Checkout only accepts known values; Google Pay rides on `card`.
         $types = array_values(array_intersect($types, ['card', 'paypal']));
+=======
+        $types = array_values(array_intersect($candidate, $configured));
+>>>>>>> parent of 829bb1a (updated)
 
         return count($types) > 0 ? $types : $fallback;
     }
@@ -870,7 +904,7 @@ class CheckoutService
             ->whereNotNull('country_code')
             ->pluck('country_code')
             ->filter()
-            ->map(fn($c) => strtoupper($c))
+            ->map(fn ($c) => strtoupper($c))
             ->unique()
             ->values()
             ->all();
@@ -879,10 +913,13 @@ class CheckoutService
             ? $fromRates
             : ['GB', 'IE', 'FR', 'DE', 'NL', 'BE', 'US', 'AE', 'AU', 'NZ'];
     }
+<<<<<<< HEAD
 
     private function safeStatus(string $candidate): string
     {
         $allowed = ['pending', 'paid', 'failed', 'cancelled', 'processing', 'shipped', 'completed'];
         return in_array($candidate, $allowed, true) ? $candidate : 'pending';
     }
+=======
+>>>>>>> parent of 829bb1a (updated)
 }

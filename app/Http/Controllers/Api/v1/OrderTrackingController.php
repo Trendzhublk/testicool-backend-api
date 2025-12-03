@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Mail\OrderStatusMail;
+use App\Services\OrderStatusNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rule;
@@ -92,13 +93,17 @@ class OrderTrackingController extends Controller
             'note' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        $originalStatus = $order->status;
+
         $order->update([
             'status' => $data['status'],
             'status_note' => $data['note'] ?? null,
             'status_updated_at' => now(),
         ]);
 
-        $this->notifyOrderStatus($order);
+        if ($originalStatus !== $order->status) {
+            app(OrderStatusNotifier::class)->send($order);
+        }
 
         return response()->json([
             'message' => 'Order status updated.',
@@ -106,6 +111,8 @@ class OrderTrackingController extends Controller
             'tracking_number' => $order->tracking_number,
         ]);
     }
+<<<<<<< HEAD
+=======
 
     private function notifyOrderStatus(Order $order): void
     {
@@ -113,46 +120,21 @@ class OrderTrackingController extends Controller
             return;
         }
 
-        $items = $order->children()
-            ->get([
-                'id',
-                'title_snapshot',
-                'qty',
-                'price_snapshot',
-                'line_total',
-                'sku_snapshot',
-                'size_snapshot',
-                'color_snapshot',
-                'color_hex_snapshot',
-                'variant_id',
-                'meta',
-            ])
-            ->map(function ($item) {
-                $variantMeta = $item->meta['variant'] ?? [];
-
-                return [
-                    'id' => $item->id,
-                    'title' => $item->title_snapshot,
-                    'qty' => $item->qty,
-                    'price' => $item->price_snapshot,
-                    'line_total' => $item->line_total,
-                    'sku' => $item->sku_snapshot,
-                    'variant_id' => $item->variant_id,
-                    'size' => $item->size_snapshot ?? ($variantMeta['size'] ?? null),
-                    'size_id' => $variantMeta['size_id'] ?? null,
-                    'color' => $item->color_snapshot ?? ($variantMeta['color'] ?? null),
-                    'color_id' => $variantMeta['color_id'] ?? null,
-                    'color_hex' => $item->color_hex_snapshot ?? ($variantMeta['color_hex'] ?? null),
-                ];
-            });
-
         $adminEmail = config('mail.from.address');
-        $mail = Mail::to($order->customer_email, $order->customer_name ?? null);
+        $subject = "Order {$order->tracking_number} status: {$order->status}";
+        $body = "Hi {$order->customer_name},\n\n"
+            ."Your order status is now: {$order->status}.\n"
+            .($order->status_note ? "Note: {$order->status_note}\n" : '')
+            ."\nThank you.";
 
-        if ($adminEmail) {
-            $mail->cc($adminEmail);
-        }
+        Mail::raw($body, function ($message) use ($order, $adminEmail, $subject) {
+            $message->to($order->customer_email, $order->customer_name ?? null)
+                ->subject($subject);
 
-        $mail->send(new OrderStatusMail($order, $items));
+            if ($adminEmail) {
+                $message->cc($adminEmail);
+            }
+        });
     }
+>>>>>>> parent of 829bb1a (updated)
 }
