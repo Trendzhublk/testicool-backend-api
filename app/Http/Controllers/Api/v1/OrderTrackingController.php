@@ -111,8 +111,6 @@ class OrderTrackingController extends Controller
             'tracking_number' => $order->tracking_number,
         ]);
     }
-<<<<<<< HEAD
-=======
 
     private function notifyOrderStatus(Order $order): void
     {
@@ -136,5 +134,4 @@ class OrderTrackingController extends Controller
             }
         });
     }
->>>>>>> parent of 829bb1a (updated)
 }

@@ -11,16 +11,18 @@
     $logoUrl = url('https://main.d36wz4kndhn356.amplifyapp.com/_nuxt/logo.CPcPtLaP.png');
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Status Update - {{ config('app.name') }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&display=swap"
-        rel="stylesheet">
+    <!--[if mso]><xml><w:WordDocument xmlns:w="urn:schemas-microsoft-com:office:word"><w:DontUseAdvancedTypographyReadingMail/></w:WordDocument><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]-->
+    <!--[if !mso]><!-->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet" type="text/css">
+    <!--<![endif]-->
     <style>
         * {
             box-sizing: border-box;
@@ -28,103 +30,189 @@
 
         body {
             margin: 0;
-            padding: 20px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #111827;
-            line-height: 1.6;
+            padding: 0;
+            background-color: #ffffff;
+            -webkit-text-size-adjust: none;
+            text-size-adjust: none;
         }
 
-        /* Dark mode support */
-        @media (prefers-color-scheme: dark) {
-            .greeting {
-                color: #ffffff !important;
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: inherit !important;
+        }
+
+        #MessageViewBody a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        p {
+            line-height: inherit;
+        }
+
+        .desktop_hide,
+        .desktop_hide table {
+            mso-hide: all;
+            display: none;
+            max-height: 0px;
+            overflow: hidden;
+        }
+
+        .image_block img+div {
+            display: none;
+        }
+
+        sup,
+        sub {
+            font-size: 75%;
+            line-height: 0;
+        }
+
+        @media (max-width:620px) {
+
+            .desktop_hide table.icons-inner,
+            .social_block.desktop_hide .social-table {
+                display: inline-block !important;
             }
 
-            .message {
-                color: #a3a3a3 !important;
-            }
-
-            .order-info-label {
-                color: #e5e5e5 !important;
-            }
-
-            .order-info-value {
-                color: #a3a3a3 !important;
-            }
-
-            .items-title {
-                color: #ffffff !important;
-            }
-
-            .item-title {
-                color: #ffffff !important;
-            }
-
-            .item-meta {
-                color: #737373 !important;
-            }
-
-            .item-price {
-                color: #e5e5e5 !important;
-            }
-
-            .header {
-                background-color: #000000;
-                padding: 30px 0;
+            .icons-inner {
                 text-align: center;
-                border-bottom: 1px solid #1f2937;
+            }
+
+            .icons-inner td {
+                margin: 0 auto;
+            }
+
+            .image_block div.fullWidth {
+                max-width: 100% !important;
+            }
+
+            .mobile_hide {
+                display: none;
+            }
+
+            .row-content {
+                width: 100% !important;
+            }
+
+            .stack .column {
+                width: 100%;
+                display: block;
+            }
+
+            .mobile_hide {
+                min-height: 0;
+                max-height: 0;
+                max-width: 0;
+                overflow: hidden;
+                font-size: 0px;
+            }
+
+            .desktop_hide,
+            .desktop_hide table {
+                display: table !important;
+                max-height: none !important;
             }
         }
 
-        .email-wrapper {
-            max-width: 600px;
+        table {
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+
+        }
+
+        .row-content {
+            border-radius: 0;
+            color: #000000;
+            width: 600px;
             margin: 0 auto;
-            padding: 0 15px;
+        }
+
+        .row-content.stack {
             background-color: #ffffff;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        /* Header with gradient like frontend banner */
-        .top-banner {
-            background: linear-gradient(to right, #0f172a, #334155);
-            color: #ffffff;
-            text-align: center;
-            padding: 12px 20px;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
+        .column {
+            font-weight: 400;
+            text-align: left;
+            vertical-align: top;
         }
 
-        .header {
-            background-color: #000000;
-            padding: 30px 0;
-            text-align: center;
-            border-bottom: 1px solid #1f2937;
+        .heading_block h1,
+        .heading_block h2,
+        .heading_block h3 {
+            margin: 0;
+            color: #000000;
+            direction: ltr;
+            letter-spacing: normal;
+            line-height: 1.2;
+            margin-top: 0;
+            margin-bottom: 0;
         }
 
-        .logo {
-            display: block;
-            margin: 0 auto;
-        }
-
-        .hero-title {
+        .heading_block h1 {
             font-family: 'Anton', sans-serif;
-            font-size: 28px;
-            color: #ffffff;
-            margin-top: 16px;
-            padding: 0 20px;
-            letter-spacing: 1px;
+            font-size: 48px;
+            font-weight: 700;
         }
 
-        .content {
-            padding: 40px 30px;
-            background-color: #ffffff;
+        .heading_block h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .heading_block h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .paragraph_block div {
+            color: #000000;
+            direction: ltr;
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: 0px;
+            line-height: 1.5;
+        }
+
+        .button_block .alignment {
+            text-align: center;
+        }
+
+        .button_block .button {
+            background-color: #000000;
+            border-radius: 10px;
+            color: #ffffff;
+            display: inline-block;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            letter-spacing: normal;
+            line-height: 24px;
+        }
+
+        .divider_inner {
+            font-size: 1px;
+            line-height: 1px;
+            border-top: 1px solid #000000;
+        }
+
+        .spacer_block {
+            height: 24px;
+            line-height: 24px;
+            font-size: 1px;
         }
 
         .status-badge {
             display: inline-block;
-            background-color: {{ $statusColor }};
+            background-color: #000000;
             color: #ffffff;
             padding: 6px 16px;
             border-radius: 4px;
@@ -132,403 +220,760 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin: 0;
-            box-shadow: none;
         }
 
-        .greeting {
-            font-size: 20px;
-            font-weight: 700;
-            color: #000000;
-            margin-bottom: 12px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .message {
-            font-size: 15px;
-            color: #6b7280;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .order-info {
-            background-color: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-left: 3px solid #000000;
-            padding: 20px 24px;
-            margin: 24px 0;
-            border-radius: 6px;
-            box-shadow: none;
-        }
-
-        .order-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: none;
-        }
-
-        .order-info-row:last-child {
-            border-bottom: none;
-        }
-
-        .order-info-label {
-            font-weight: 600;
-            color: #111827;
-            font-size: 14px;
-        }
-
-        .order-info-value {
-            color: #6b7280;
-            font-size: 14px;
-            text-align: right;
-        }
-
-        .items-section {
-            margin: 32px 0;
-        }
-
-        .items-title {
-            font-family: 'Inter', sans-serif;
-            font-size: 18px;
-            font-weight: 700;
-            color: #000000;
-            margin: 32px 0 16px 0;
-            padding-bottom: 0;
-            border-bottom: none;
-            text-transform: none;
-            letter-spacing: 0;
-        }
-
-        .item {
-            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%);
-            padding: 20px;
-            margin-bottom: 16px;
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .item-details {
-            flex: 1;
-        }
-
-        .item-title {
-            font-weight: 700;
-            color: #000000;
-            font-size: 16px;
-            margin-bottom: 8px;
-        }
-
-        .item-meta {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 4px;
-        }
-
-        .item-price {
-            font-weight: 700;
-            color: #000000;
-            font-size: 18px;
-            white-space: nowrap;
-            margin-left: 20px;
-        }
-
-        .note-box {
-            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
-            border: 1px solid #f59e0b;
-            border-left: 3px solid #f59e0b;
-            padding: 20px 24px;
-            margin: 24px 0;
-            border-radius: 6px;
-            font-size: 14px;
-            color: #78350f;
-            box-shadow: none;
-        }
-
-        .note-box strong {
-            font-weight: 700;
-        }
-
-        .button {
-            display: inline-block;
-            background-color: #000000;
-            color: #ffffff !important;
-            padding: 14px 32px;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: 14px;
-            margin: 30px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #1f2937;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
         }
 
         .footer {
-            background-color: #000000;
-            color: #ffffff;
-            padding: 40px 30px;
-        }
-
-        .footer-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            gap: 20px;
-        }
-
-        .footer-left {
-            flex: 1;
-        }
-
-        .footer-logo {
-            max-width: 150px;
-            width: auto;
-            height: auto;
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .footer-message {
-            font-size: 14px;
-            color: #ffffff;
-            font-weight: 600;
-            line-height: 1.6;
-            max-width: 300px;
-        }
-
-        .footer-right {
-            text-align: right;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 60px 20px;
+            text-align: center;
         }
 
         .footer-text {
+            color: #000000;
+            font-family: 'Anton', sans-serif;
             font-size: 14px;
-            color: #9ca3af;
-            line-height: 1.8;
-            margin: 8px 0;
+            font-weight: 400;
+            letter-spacing: 0px;
+            line-height: 1.5;
         }
 
-        .footer-divider {
-            height: 1px;
-            background: linear-gradient(to right, transparent, #374151, transparent);
-            margin: 24px 0;
-        }
-
-        .footer-bottom {
-            text-align: center;
-            margin-top: 24px;
-        }
-
-        .footer-link {
-            color: #9ca3af;
-            text-decoration: underline;
-            font-size: 13px;
-        }
-
-        .footer-link:hover {
-            color: #ffffff;
-        }
-
-        .divider {
-            height: 2px;
-            background: linear-gradient(to right, transparent, #e5e7eb, transparent);
-            margin: 40px 0;
-        }
-
-        @media only screen and (max-width: 600px) {
-            body {
-                padding: 10px;
+        @media only screen and (max-width: 620px) {
+            .row-content {
+                width: 100% !important;
             }
 
-            .content {
-                padding: 30px 20px;
+            .column {
+                width: 100% !important;
+                display: block;
             }
 
-            .top-banner {
-                font-size: 10px;
-                padding: 10px 15px;
+            .heading_block h1 {
+                font-size: 32px !important;
             }
 
-            .header {
-                padding: 24px 20px;
+            .heading_block h2 {
+                font-size: 24px !important;
             }
 
-            .logo {
-                max-width: 150px;
-            }
-
-            .hero-title {
-                font-size: 22px;
-            }
-
-            .greeting {
-                font-size: 22px;
-            }
-
-            .item {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .item-price {
-                margin-left: 0;
-                margin-top: 12px;
-            }
-
-            .footer-top {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .footer-left {
-                width: 100%;
-            }
-
-            .footer-right {
-                width: 100%;
-                text-align: left;
-                margin-top: 20px;
-            }
-
-            .footer-logo {
-                max-width: 120px;
-            }
-
-            .footer-message {
-                max-width: 100%;
+            .paragraph_block div {
+                font-size: 16px !important;
             }
         }
     </style>
+    <!--[if mso]><style>sup, sub { font-size: 100% !important; } sup { mso-text-raise:10% } sub { mso-text-raise:-10% }</style><![endif]-->
 </head>
 
-<body>
-    <div class="email-wrapper">
-        <!-- Top Banner (like frontend) -->
-        <div class="top-banner">
-            Best Men's Underwear - Order Status Update
-        </div>
+<body class="body"
+    style="background-color: #ffffff; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
+    <table class="nl-container" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation"
+        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff;">
+        <tbody>
+            <tr>
+                <td>
+                    <!-- Hero Section -->
+                    <table class="row row-2" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
+                                                    <table class="image_block block-1" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="width:100%;padding-right:0px;padding-left:0px;">
+                                                                <div class="alignment" align="center">
+                                                                    <div class="fullWidth" style="max-width: 600px;">
+                                                                        <img src="https://api.testicool.co.uk/assets/images/logo.png"
+                                                                            style="display: block; height: auto; border: 0; width: 100%;"
+                                                                            width="600" alt="Order Status"
+                                                                            title="Order Status" height="auto">
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <!-- Header with Logo -->
-        <div class="header">
-            <img src="https://api.testicool.co.uk/assets/images/logo.png" alt="TESTICOOL" width="200">
-            <div class="hero-title">Order Status Update</div>
-        </div>
+                    <!-- Main Content Section -->
+                    <table class="row row-3" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 48px; padding-left: 50px; padding-right: 50px; padding-top: 48px; vertical-align: top;">
+                                                    <table class="heading_block block-1" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad" style="text-align:center;width:100%;">
+                                                                <h1
+                                                                    style="margin: 0; color: #000000; direction: ltr; font-family: 'Anton', sans-serif; font-size: 48px; font-weight: 600; letter-spacing: normal; line-height: 1.2; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 58px;">
+                                                                    Order Status Update
+                                                                </h1>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="paragraph_block block-2" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:20px;padding-top:20px;">
+                                                                <div
+                                                                    style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:18px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:center;mso-line-height-alt:27px;">
+                                                                    <p style="margin: 0;">Hi
+                                                                        {{ $order->customer_name ?? 'Customer' }}, your
+                                                                        order has been updated!</p>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="button_block block-3" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-left:10px;padding-right:10px;padding-top:10px;text-align:center;">
+                                                                <div class="alignment" align="center">
+                                                                    <span
+                                                                        class="status-badge">{{ ucfirst($order->status) }}</span>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <!-- Content -->
-        <div class="content">
-            <div class="greeting">Hi {{ $order->customer_name ?? 'Customer' }},</div>
+                    <!-- Spacer -->
+                    <table class="row row-4" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
+                                                    <div class="spacer_block block-1"
+                                                        style="height:24px;line-height:24px;font-size:1px;">&#8202;
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <div class="message">
-                Your order has been updated! Here's the latest status of your order.
-            </div>
+                    <!-- Order Details Section -->
+                    <table class="row row-5" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 48px; padding-left: 50px; padding-right: 50px; padding-top: 48px; vertical-align: top;">
+                                                    <table class="heading_block block-1" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad" style="text-align:center;width:100%;">
+                                                                <h2
+                                                                    style="margin: 0; color: #000000; direction: ltr; font-family: 'Anton', sans-serif; font-size: 32px; font-weight: 500; letter-spacing: normal; line-height: 1.2; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 38px;">
+                                                                    What's in your order?
+                                                                </h2>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="paragraph_block block-2" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                        <tr>
+                                                            <td class="pad" style="padding-top:20px;">
+                                                                <div
+                                                                    style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:center;mso-line-height-alt:24px;">
+                                                                    <p style="margin: 0;">Order Number:
+                                                                        #{{ $order->tracking_number }}</p>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <div style="text-align: center;">
-                <span class="status-badge">{{ ucfirst($order->status) }}</span>
-            </div>
+                    <!-- Order Items -->
+                    @foreach ($items as $item)
+                        <table class="row row-6" align="center" width="100%" border="0" cellpadding="0"
+                            cellspacing="0" role="presentation"
+                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="row-content stack" align="center" border="0"
+                                            cellpadding="0" cellspacing="0" role="presentation"
+                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                            width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="column column-1" width="33.333333333333336%"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 50px; padding-right: 12px; vertical-align: top;">
+                                                        <table class="image_block block-1" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                            <tr>
+                                                                <td class="pad"
+                                                                    style="width:100%;padding-right:0px;padding-left:0px;">
+                                                                    <div class="alignment" align="center">
+                                                                        <div class="fullWidth"
+                                                                            style="max-width: 138px;">
+                                                                            @if (isset($item['image']) && $item['image'])
+                                                                                <img src="{{ $item['image'] }}"
+                                                                                    style="display: block; height: auto; border: 0; width: 100%;"
+                                                                                    width="138"
+                                                                                    alt="{{ $item['title'] }}"
+                                                                                    title="{{ $item['title'] }}"
+                                                                                    height="auto">
+                                                                            @else
+                                                                                <img src="https://via.placeholder.com/138"
+                                                                                    style="display: block; height: auto; border: 0; width: 100%;"
+                                                                                    width="138"
+                                                                                    alt="{{ $item['title'] }}"
+                                                                                    title="{{ $item['title'] }}"
+                                                                                    height="auto">
+                                                                            @endif
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td class="column column-2" width="41.666666666666664%"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 12px; padding-right: 24px; padding-top: 24px; vertical-align: top;">
+                                                        <table class="heading_block block-1" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                            <tr>
+                                                                <td class="pad"
+                                                                    style="padding-bottom:15px;text-align:center;width:100%;">
+                                                                    <h3
+                                                                        style="margin: 0; color: #000000; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 22px;">
+                                                                        {{ $item['title'] }}
+                                                                    </h3>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <table class="paragraph_block block-2" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                            <tr>
+                                                                <td class="pad" style="padding-bottom:5px;">
+                                                                    <div
+                                                                        style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
+                                                                        <p style="margin: 0;">
+                                                                            @if ($item['size'])
+                                                                                Size: {{ $item['size'] }}
+                                                                            @endif
+                                                                            @if ($item['size'] && $item['color'])
+                                                                                |
+                                                                            @endif
+                                                                            @if ($item['color'])
+                                                                                Color: {{ $item['color'] }}
+                                                                            @endif
+                                                                        </p>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <table class="paragraph_block block-3" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                            <tr>
+                                                                <td class="pad">
+                                                                    <div
+                                                                        style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
+                                                                        <p style="margin: 0;">Quantity:
+                                                                            {{ $item['qty'] }}</p>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                    <td class="column column-3" width="25%"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-right: 50px; padding-top: 24px; vertical-align: top;">
+                                                        <table class="heading_block block-1" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                            <tr>
+                                                                <td class="pad"
+                                                                    style="padding-bottom:15px;text-align:center;width:100%;">
+                                                                    <h3
+                                                                        style="margin: 0; color: #000000; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: normal; line-height: 1.2; text-align: right; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 22px;">
+                                                                        {{ strtoupper($currency) }}
+                                                                        {{ number_format((float) $item['line_total'], 2) }}
+                                                                    </h3>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-            @if ($order->status_note)
-                <div class="note-box">
-                    <strong>📌 Note:</strong> {{ $order->status_note }}
-                </div>
-            @endif
+                        <!-- Spacer between items -->
+                        <table class="row row-7" align="center" width="100%" border="0" cellpadding="0"
+                            cellspacing="0" role="presentation"
+                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="row-content stack" align="center" border="0"
+                                            cellpadding="0" cellspacing="0" role="presentation"
+                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                            width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="column column-1" width="100%"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
+                                                        <div class="spacer_block block-1"
+                                                            style="height:24px;line-height:24px;font-size:1px;">&#8202;
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @endforeach
 
-            <!-- Order Information -->
-            <div class="order-info">
-                <div class="order-info-row">
-                    <span class="order-info-label">Order Number:</span>
-                    <span class="order-info-value">#{{ $order->tracking_number }}</span>
-                </div>
-                <div class="order-info-row">
-                    <span class="order-info-label">Status:</span>
-                    <span class="order-info-value">{{ ucfirst($order->status) }}</span>
-                </div>
-                <div class="order-info-row">
-                    <span class="order-info-label">Updated:</span>
-                    <span
-                        class="order-info-value">{{ optional($order->status_updated_at)->format('M d, Y h:i A') }}</span>
-                </div>
-            </div>
+                    <!-- Status Note (if exists) -->
+                    @if ($order->status_note)
+                        <table class="row" align="center" width="100%" border="0" cellpadding="0"
+                            cellspacing="0" role="presentation"
+                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table class="row-content stack" align="center" border="0"
+                                            cellpadding="0" cellspacing="0" role="presentation"
+                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                            width="600">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="column column-1" width="100%"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 50px; padding-right: 50px; padding-bottom: 24px; vertical-align: top;">
+                                                        <table class="paragraph_block block-1" width="100%"
+                                                            border="0" cellpadding="0" cellspacing="0"
+                                                            role="presentation"
+                                                            style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                            <tr>
+                                                                <td class="pad"
+                                                                    style="padding: 20px 24px; background-color: #ffffff; border: 1px solid #000000; border-left: 3px solid #000000; border-radius: 6px;">
+                                                                    <div
+                                                                        style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:left;mso-line-height-alt:21px;">
+                                                                        <p style="margin: 0;"><strong>📌 Note:</strong>
+                                                                            {{ $order->status_note }}</p>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    @endif
 
-            <!-- Order Items -->
-            <div class="items-section">
-                <div class="items-title">Order Items</div>
-                @foreach ($items as $item)
-                    <div class="item">
-                        <div class="item-details">
-                            <div class="item-title">{{ $item['title'] }}</div>
-                            @if ($item['size'] || $item['color'])
-                                <div class="item-meta">
-                                    @if ($item['size'])
-                                        <span>Size: {{ $item['size'] }}</span>
-                                    @endif
-                                    @if ($item['size'] && $item['color'])
-                                        <span> | </span>
-                                    @endif
-                                    @if ($item['color'])
-                                        <span>Color: {{ $item['color'] }}</span>
-                                    @endif
-                                </div>
-                            @endif
-                            <div class="item-meta">Quantity: {{ $item['qty'] }}</div>
-                        </div>
-                        <div class="item-price">
-                            {{ strtoupper($currency) }} {{ number_format((float) $item['line_total'], 2) }}
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+                    <!-- Divider -->
+                    <table class="row row-11" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 50px; padding-right: 50px; vertical-align: top;">
+                                                    <table class="divider_block block-1" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:40px;padding-top:40px;">
+                                                                <div class="alignment" align="center">
+                                                                    <table border="0" cellpadding="0"
+                                                                        cellspacing="0" role="presentation"
+                                                                        width="100%"
+                                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                        <tr>
+                                                                            <td class="divider_inner"
+                                                                                style="font-size: 1px; line-height: 1px; border-top: 1px solid #000000;">
+                                                                                <span
+                                                                                    style="word-break: break-word;">&#8202;</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <div class="divider"></div>
+                    <!-- Order Information Details -->
+                    <table class="row row-16" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="50%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 50px; padding-right: 20px; vertical-align: top;">
+                                                    <table class="divider_block block-1" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:40px;padding-top:40px;">
+                                                                <div class="alignment" align="center">
+                                                                    <table border="0" cellpadding="0"
+                                                                        cellspacing="0" role="presentation"
+                                                                        width="100%"
+                                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                        <tr>
+                                                                            <td class="divider_inner"
+                                                                                style="font-size: 1px; line-height: 1px; border-top: 1px solid #000000;">
+                                                                                <span
+                                                                                    style="word-break: break-word;">&#8202;</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="heading_block block-2" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:5px;text-align:center;width:100%;">
+                                                                <h3
+                                                                    style="margin: 0; color: #000000; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 22px;">
+                                                                    Order Status:
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="heading_block block-3" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:5px;padding-top:10px;text-align:center;width:100%;">
+                                                                <h3
+                                                                    style="margin: 0; color: #5d5d60; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 17px;">
+                                                                    {{ ucfirst($order->status) }}
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="heading_block block-4" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:10px;padding-top:10px;text-align:center;width:100%;">
+                                                                <h3
+                                                                    style="margin: 0; color: #5d5d60; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 17px;">
+                                                                    Updated:
+                                                                    {{ optional($order->status_updated_at)->format('F d, Y') }}
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td class="column column-2" width="50%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-left: 20px; padding-right: 50px; vertical-align: top;">
+                                                    <table class="divider_block block-1" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:40px;padding-top:40px;">
+                                                                <div class="alignment" align="center">
+                                                                    <table border="0" cellpadding="0"
+                                                                        cellspacing="0" role="presentation"
+                                                                        width="100%"
+                                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                                        <tr>
+                                                                            <td class="divider_inner"
+                                                                                style="font-size: 1px; line-height: 1px; border-top: 1px solid #000000;">
+                                                                                <span
+                                                                                    style="word-break: break-word;">&#8202;</span>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="heading_block block-2" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:5px;text-align:center;width:100%;">
+                                                                <h3
+                                                                    style="margin: 0; color: #000000; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 600; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 22px;">
+                                                                    Tracking Number:
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="heading_block block-3" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:5px;padding-top:10px;text-align:center;width:100%;">
+                                                                <h3
+                                                                    style="margin: 0; color: #5d5d60; direction: ltr; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 400; letter-spacing: normal; line-height: 1.2; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 17px;">
+                                                                    #{{ $order->tracking_number }}
+                                                                </h3>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <!-- Call to Action -->
-            <div style="text-align: center;">
-                <a href="{{ config('app.url') }}" class="button">View Order Details</a>
-            </div>
+                    <!-- Track Order Button -->
+                    <table class="row row-18" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 48px; padding-left: 50px; padding-right: 50px; padding-top: 48px; vertical-align: top;">
+                                                    <table class="button_block block-1" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-left:10px;padding-right:10px;text-align:center;">
+                                                                <div class="alignment" align="center">
+                                                                    <a href="{{ config('app.url') }}" target="_blank"
+                                                                        style="color:#ffffff;text-decoration:none;">
+                                                                        <!--[if mso]><v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word" href="{{ config('app.url') }}" style="height:48px;width:153px;v-text-anchor:middle;" arcsize="21%" fillcolor="#000000"><v:stroke dashstyle="Solid" weight="0px" color="#000000"/><w:anchorlock/><v:textbox inset="0px,0px,0px,0px"><center dir="false" style="color:#ffffff;font-family:sans-serif;font-size:16px"><![endif]-->
+                                                                        <span class="button"
+                                                                            style="background-color: #000000; border-radius: 10px; color: #ffffff; display: inline-block; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 400; padding-bottom: 12px; padding-top: 12px; padding-left: 24px; padding-right: 24px; text-align: center; text-decoration: none; letter-spacing: normal;">
+                                                                            <span style="line-height: 24px;">View Order
+                                                                                Details</span>
+                                                                        </span>
+                                                                        <!--[if mso]></center></v:textbox></v:roundrect><![endif]-->
+                                                                    </a>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-            <div class="message" style="text-align: center; margin-top: 30px; font-size: 14px;">
-                If you have any questions about your order, please don't hesitate to contact us at
-                <strong>support@testicool.co.uk</strong>
-            </div>
-        </div>
+                    <!-- Spacer -->
+                    <table class="row row-19" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top;">
+                                                    <div class="spacer_block block-1"
+                                                        style="height:24px;line-height:24px;font-size:1px;">&#8202;
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-        <!-- Footer (matching frontend footer) -->
-        <div class="footer">
-            <div class="footer-top">
-                <div class="footer-left">
-                    <img src="https://api.testicool.co.uk/assets/images/logo.png" alt="TESTICOOL" class="footer-logo">
-                    <div class="footer-message">
-                        Performance essentials engineered for comfort and confidence.
-                    </div>
-                </div>
-                <div class="footer-right">
-                    <p class="footer-text">
-                        📧 <a href="mailto:support@testicool.co.uk" class="footer-link">support@testicool.co.uk</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="footer-divider"></div>
-
-            <div class="footer-bottom">
-                <p class="footer-text" style="font-size: 12px;">
-                    © {{ date('Y') }} TestiCool. All rights reserved.
-                </p>
-                <p class="footer-text" style="font-size: 11px; margin-top: 16px; opacity: 0.7;">
-                    This is an automated email. Please do not reply to this message.
-                </p>
-            </div>
-        </div>
-    </div>
+                    <!-- Footer -->
+                    <table class="row row-23" align="center" width="100%" border="0" cellpadding="0"
+                        cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <table class="row-content stack" align="center" border="0" cellpadding="0"
+                                        cellspacing="0" role="presentation"
+                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 0; color: #000000; width: 600px; margin: 0 auto;"
+                                        width="600">
+                                        <tbody>
+                                            <tr>
+                                                <td class="column column-1" width="100%"
+                                                    style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 60px; padding-top: 60px; vertical-align: top;">
+                                                    <table class="image_block block-1" width="100%" border="0"
+                                                        cellpadding="0" cellspacing="0" role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="width:100%;padding-right:0px;padding-left:0px;">
+                                                                <div class="alignment" align="center">
+                                                                    <div style="max-width: 120px;">
+                                                                        <img src="https://api.testicool.co.uk/assets/images/logo.png"
+                                                                            style="display: block; height: auto; border: 0; width: 100%;"
+                                                                            width="120" alt="TESTICOOL"
+                                                                            title="TESTICOOL" height="auto">
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                    <table class="paragraph_block block-2" width="100%"
+                                                        border="0" cellpadding="0" cellspacing="0"
+                                                        role="presentation"
+                                                        style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                                                        <tr>
+                                                            <td class="pad"
+                                                                style="padding-bottom:15px;padding-top:15px;">
+                                                                <div
+                                                                    style="color:#000000;direction:ltr;font-family:'Poppins', sans-serif;font-size:14px;font-weight:400;letter-spacing:0px;line-height:1.5;text-align:center;mso-line-height-alt:21px;">
+                                                                    <p style="margin: 0;">© {{ date('Y') }}
+                                                                        TestiCool. All rights reserved.<br>Performance
+                                                                        essentials engineered for comfort and
+                                                                        confidence.</p>
+                                                                    <p style="margin: 0; margin-top: 10px;">📧 <a
+                                                                            href="mailto:support@testicool.co.uk"
+                                                                            style="color: #000000; text-decoration: underline;">support@testicool.co.uk</a>
+                                                                    </p>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </body>
 
 </html>
